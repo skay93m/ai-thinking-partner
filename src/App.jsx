@@ -62,14 +62,28 @@ const EXAMPLE_FACTS = {
     {
       category: "pattern",
       key: "core_wound",
-      value: "Example: At 17, achieved high grades but faced rejection that shattered identity. Spent years chasing credentials to prove worth.",
+      value: "At 17, achieved high grades but faced rejection that shattered identity. Spent years chasing credentials to prove worth.",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     },
     {
       category: "context",
       key: "adhd_traits",
-      value: "Example: ADHD makes novelty more rewarding than sustained effort. When things get boring/hard, triggers old wounds.",
+      value: "ADHD makes novelty more rewarding than sustained effort. When things get boring/hard, triggers old wounds.",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    },
+    {
+      category: "pattern",
+      key: "project_switching",
+      value: "Tends to abandon projects when they require sustained effort or when initial excitement wears off.",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    },
+    {
+      category: "strength",
+      key: "rapid_learning",
+      value: "Exceptional at quickly grasping new concepts and making creative connections between ideas.",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }
@@ -79,31 +93,118 @@ const EXAMPLE_FACTS = {
 const EXAMPLE_PROJECTS = {
   projects: [
     {
-      id: "example-1",
-      title: "Example: Certification Project",
-      status: "parked",
-      definition_of_done: "Pass exam, complete 3 months of study without switching focus",
-      progress_notes: "Realized this was pattern-chasing after reflection. Parking to reassess genuine interest.",
-      pattern_flags: ["credential_chasing", "triggered_by_comparison"],
-      created_at: new Date().toISOString(),
+      id: "demo-1",
+      title: "AI Thinking Partner App",
+      status: "active",
+      definition_of_done: "Build a working app that helps challenge my thought patterns and provides brutally honest feedback",
+      progress_notes: "Making good progress on UI. Need to focus on AI integration next. Resisting urge to add too many features.",
+      pattern_flags: ["scope_creep_risk"],
+      created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
       last_accessed_at: new Date().toISOString(),
+      completed_at: null
+    },
+    {
+      id: "demo-2", 
+      title: "Learn React Native",
+      status: "parked",
+      definition_of_done: "Build one complete mobile app and understand the ecosystem",
+      progress_notes: "Started with enthusiasm but got stuck on navigation. Parking until I finish current web project.",
+      pattern_flags: ["shiny_object_syndrome", "difficulty_avoidance"],
+      created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+      last_accessed_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      completed_at: null
+    },
+    {
+      id: "demo-3",
+      title: "Morning Routine Optimization",
+      status: "completed",
+      definition_of_done: "Maintain consistent 6am wake-up for 30 days with energizing routine",
+      progress_notes: "Successfully built habit! Key was linking it to coffee and immediate small win.",
+      pattern_flags: [],
+      created_at: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+      last_accessed_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      completed_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "demo-4",
+      title: "Side Hustle: Design Consulting", 
+      status: "active",
+      definition_of_done: "Land 3 paying clients and generate $2000 in revenue",
+      progress_notes: "Got first client! Working on portfolio site. Need to resist perfectionism and just ship.",
+      pattern_flags: ["perfectionism"],
+      created_at: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
+      last_accessed_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      completed_at: null
+    },
+    {
+      id: "demo-5",
+      title: "Master TypeScript",
+      status: "parked", 
+      definition_of_done: "Feel confident using advanced TS features in production",
+      progress_notes: "Got overwhelmed by generic constraints. Will revisit after gaining more JS experience.",
+      pattern_flags: ["depth_avoidance", "comparison_trigger"],
+      created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+      last_accessed_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
       completed_at: null
     }
   ]
 };
 
+const DEMO_CONVERSATIONS = [
+  {
+    id: "conv-1",
+    projectId: "demo-1",
+    messages: [
+      {
+        role: "user",
+        content: "I want to build an AI thinking partner that challenges my ADHD patterns. I keep starting projects but never finishing them."
+      },
+      {
+        role: "assistant", 
+        content: "Interesting timing on this thought. You say you 'never finish' projects, but you're currently planning to start another one. Let's dig into this pattern first.\n\nWhat happened with the last 3 projects you abandoned? Not just 'I got bored' - what was the specific moment you stopped working on each one?"
+      },
+      {
+        role: "user",
+        content: "Well, the React Native thing got hard when I couldn't figure out navigation. The TypeScript project felt overwhelming with all the advanced concepts. And I stopped the design course when I saw someone younger than me already doing amazing work."
+      },
+      {
+        role: "assistant",
+        content: "Now we're getting somewhere. I see three different triggers here:\n\n1. **Technical difficulty** (React Native navigation)\n2. **Cognitive overload** (TypeScript complexity) \n3. **Comparison wound** (younger designer)\n\nHere's the brutal truth: You're not actually quitting because of ADHD. You're quitting because these projects are triggering a core wound around not being 'good enough.' \n\nThe ADHD brain seeking novelty is just the convenient excuse. The real pattern is: when something challenges your identity as competent, you flee to something new where you can feel smart again.\n\nSo before we build another 'solution,' what if this AI thinking partner idea is just another way to avoid dealing with the fact that you stop when things get real?"
+      }
+    ],
+    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: "conv-2", 
+    projectId: "demo-4",
+    messages: [
+      {
+        role: "user",
+        content: "Got my first design client! But now I'm spending way too much time perfecting my portfolio site instead of just launching it."
+      },
+      {
+        role: "assistant",
+        content: "Congratulations on the client! Now let's talk about this portfolio perfectionism.\n\nYou already have a paying client, which means your work is good enough to generate revenue. Yet you're polishing a portfolio instead of serving that client or finding the next one.\n\nWhat's really happening here? Are you afraid that if you launch an 'imperfect' portfolio, you'll be exposed as a fraud? Or is perfectionism a way to delay the scary work of actually running a business?\n\nHere's a reality check: Your portfolio's job is to get you clients, not win design awards. You literally already have proof it works.\n\nWhat would happen if you launched it today, exactly as it is?"
+      }
+    ],
+    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+  }
+];
+
 function App() {
   const [currentView, setCurrentView] = useState('onboarding');
   const [onboardingStep, setOnboardingStep] = useState(0);
-  const [facts, setFacts] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [conversations, setConversations] = useState([]);
+  const [facts, setFacts] = useState(EXAMPLE_FACTS.facts);
+  const [projects, setProjects] = useState(EXAMPLE_PROJECTS.projects);
+  const [conversations, setConversations] = useState(DEMO_CONVERSATIONS);
   const [aiPrompt, setAiPrompt] = useState(DEFAULT_PROMPT);
   const [promptHistory, setPromptHistory] = useState([
     { prompt: DEFAULT_PROMPT, timestamp: new Date().toISOString(), label: 'Original' }
   ]);
-  const [lastCheckIn, setLastCheckIn] = useState(new Date().toISOString());
-  const [userName, setUserName] = useState('');
+  const [lastCheckIn, setLastCheckIn] = useState(new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+  const [userName, setUserName] = useState('Demo User');
   const [currentProjectId, setCurrentProjectId] = useState(null);
   const [currentMessages, setCurrentMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
@@ -115,9 +216,13 @@ function App() {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   
-  // API Key Management - Removed for demo
-  // const [userApiKey, setUserApiKey] = useState('');
-  // const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  // API Key Management - Simulated for demo
+  const [userApiKey, setUserApiKey] = useState('');
+  const [rateLimitInfo, setRateLimitInfo] = useState({ 
+    usingSharedKey: true, 
+    remaining: 10, 
+    limit: 10 
+  });
   // const [rateLimitInfo, setRateLimitInfo] = useState(null);
 
   const exportData = () => {
@@ -302,17 +407,18 @@ function App() {
       setCurrentMessages(newMessages);
       
       if (currentProjectId) {
-        const existingConv = conversations.find(c => c.project_id === currentProjectId);
+        const existingConv = conversations.find(c => c.projectId === currentProjectId);
         if (existingConv) {
           setConversations(conversations.map(c => 
-            c.project_id === currentProjectId ? { ...c, messages: newMessages } : c
+            c.projectId === currentProjectId ? { ...c, messages: newMessages } : c
           ));
         } else {
           setConversations([...conversations, {
             id: `conv-${Date.now()}`,
-            project_id: currentProjectId,
+            projectId: currentProjectId,
             messages: newMessages,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
           }]);
         }
         setProjects(projects.map(p => 
@@ -355,7 +461,7 @@ Let's start with: What's on my mind right now?`;
 
   const openExistingThought = (projectId) => {
     setCurrentProjectId(projectId);
-    const conv = conversations.find(c => c.project_id === projectId);
+    const conv = conversations.find(c => c.projectId === projectId);
     setCurrentMessages(conv?.messages || []);
     setCurrentView('conversation');
     const project = projects.find(p => p.id === projectId);
@@ -1050,9 +1156,9 @@ Let's start with: What's on my mind right now?`;
           </div>
         )}
         <button 
-          onClick={() => alert('Demo: This would export your data and conversations. Clone the repo to enable data management!')}
-          className="bg-gray-600 hover:bg-gray-500 text-white font-bold p-4 rounded-full shadow-lg flex items-center gap-2 opacity-75"
-          title="Demo mode - see GitHub to enable"
+          onClick={() => setShowExportMenu(!showExportMenu)}
+          className="bg-blue-600 hover:bg-blue-500 text-white font-bold p-4 rounded-full shadow-lg flex items-center gap-2"
+          title="Export your data and conversations"
         >
           <FileDown size={24} />
         </button>
@@ -1064,10 +1170,10 @@ Let's start with: What's on my mind right now?`;
             <h1 className="text-4xl font-black">Welcome back, {userName}.</h1>
             <p className="text-gray-400 mt-2">Last check-in: {new Date(lastCheckIn).toLocaleString()}</p>
           </div>
-          <button onClick={() => alert('Demo: This would open settings to customize prompts and export data. Clone the repo to enable!')}
-            className="bg-gray-800 hover:bg-gray-700 px-6 py-2 font-bold flex items-center gap-2 opacity-75"
-            title="Demo mode - see GitHub to enable">
-            <Settings size={20} /> Settings (Demo)
+          <button onClick={() => setCurrentView('settings')}
+            className="bg-gray-800 hover:bg-gray-700 px-6 py-2 font-bold flex items-center gap-2"
+            title="Configure AI prompts and export data">
+            <Settings size={20} /> Settings
           </button>
         </div>
         {error && <div className="bg-red-900 border-2 border-red-600 p-4 mb-6"><p className="font-bold">{error}</p></div>}
@@ -1116,20 +1222,41 @@ Let's start with: What's on my mind right now?`;
           </div>
         </div>
         <div className="space-y-4">
-          <button onClick={() => alert('Demo: This would start a new AI conversation. Clone the repo and add your API key to enable!')}
-            className="w-full bg-gray-700 hover:bg-gray-600 text-white font-black py-6 px-8 text-2xl flex items-center justify-center gap-3 opacity-75"
-            title="Demo mode - see GitHub to enable">
-            <MessageSquare size={28} /> Start a New Thought (Demo)
+          <button onClick={() => {
+            setCurrentProjectId(null);
+            setCurrentMessages([]);
+            setCurrentView('conversation');
+          }}
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-black py-6 px-8 text-2xl flex items-center justify-center gap-3">
+            <MessageSquare size={28} /> Start a New Thought
           </button>
-          <button onClick={() => alert('Demo: This would show your existing conversations and projects. Clone the repo to enable!')}
-            className="w-full bg-gray-700 hover:bg-gray-600 text-white font-black py-6 px-8 text-2xl flex items-center justify-center gap-3 opacity-75"
-            title="Demo mode - see GitHub to enable">
-            <List size={28} /> Review Existing Thoughts (Demo)
+          <button onClick={() => setCurrentView('projectsList')}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-6 px-8 text-2xl flex items-center justify-center gap-3">
+            <List size={28} /> Review Existing Thoughts
           </button>
-          <button onClick={() => alert('Demo: This would start an AI-guided daily check-in. Clone the repo and add your API key to enable!')}
-            className="w-full bg-gray-700 hover:bg-gray-600 text-white font-black py-6 px-8 text-2xl flex items-center justify-center gap-3 opacity-75"
-            title="Demo mode - see GitHub to enable">
-            <Calendar size={28} /> Daily Check-In (Demo)
+          <button onClick={() => {
+            const activeCount = projects.filter(p => p.status === 'active').length;
+            const daysSinceCheckIn = Math.floor((Date.now() - new Date(lastCheckIn).getTime()) / (1000 * 60 * 60 * 24));
+            
+            let checkInPrompt = `Daily check-in.\n\n`;
+            if (daysSinceCheckIn > 1) {
+              checkInPrompt += `Haven't checked in for ${daysSinceCheckIn} days. What's been going on?\n\n`;
+            }
+            if (activeCount >= 3) {
+              checkInPrompt += `You're juggling ${activeCount} active thoughts. Want to synthesize?\n\n`;
+            }
+            checkInPrompt += `Quick pulse check on active projects:\n${projects.filter(p => p.status === 'active').map(p => `- ${p.title}`).join('\n')}`;
+            
+            setCurrentProjectId(null);
+            setCurrentMessages([
+              { role: 'user', content: checkInPrompt }
+            ]);
+            setCurrentView('conversation');
+            sendMessageToClaude([{ role: 'user', content: checkInPrompt }]);
+            setLastCheckIn(new Date().toISOString());
+          }}
+            className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-black py-6 px-8 text-2xl flex items-center justify-center gap-3">
+            <Calendar size={28} /> Daily Check-In
           </button>
         </div>
         <div className="mt-8 border-2 border-red-600 p-4 bg-red-600 bg-opacity-10">

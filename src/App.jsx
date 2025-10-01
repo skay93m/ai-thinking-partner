@@ -217,12 +217,35 @@ const DEMO_CONVERSATIONS = [
   }
 ];
 
-// Demo prompts for guided typing simulation
+// Demo prompts for guided typing simulation - just one focused starter
 const DEMO_PROMPTS = [
-  "I keep starting projects but never finishing them...",
-  "I'm procrastinating on something important and don't know why.",
-  "I got some feedback that really bothered me and I can't stop thinking about it."
+  "I keep starting projects but never finishing them..."
 ];
+
+// Follow-up prompts that get progressively more defensive, then honest
+const getFollowUpPrompts = (messageCount) => {
+  if (messageCount < 2) {
+    return [
+      "Well, I think it's because I'm just really busy right now...",
+      "I mean, I do want to get it done, it's just complicated..."
+    ];
+  } else if (messageCount < 4) {
+    return [
+      "That's not fair, you don't understand my situation...",
+      "I'm not avoiding anything, I just have a lot going on..."
+    ];
+  } else if (messageCount < 6) {
+    return [
+      "Okay fine, maybe I am scared of failing at it...",
+      "You're right, I do have other unfinished projects..."
+    ];
+  } else {
+    return [
+      "I'll work on it for 30 minutes right after this conversation.",
+      "I see the pattern and I'm tired of running from difficult things."
+    ];
+  }
+};
 
 function App() {
   const [currentView, setCurrentView] = useState('onboarding');
@@ -412,18 +435,82 @@ function App() {
   };
 
   // Mock API responses for demonstration
+  // Contextual AI response generator based on user input and conversation stage
+  const generateContextualResponse = (userMessage, conversationLength) => {
+    const message = userMessage.toLowerCase();
+    
+    // Stage 1: Initial exploration
+    if (conversationLength <= 1) {
+      if (message.includes('project') || message.includes('starting') || message.includes('new')) {
+        return "Interesting timing on this thought. You say you 'never finish' projects, but you're currently planning to start another one. Let's dig into this pattern first.\n\nWhat happened with the last 3 projects you abandoned? Not just 'I got bored' - what was the specific moment you stopped working on each one?";
+      }
+      if (message.includes('procrastinating') || message.includes('avoiding') || message.includes('putting off')) {
+        return "I hear you saying you're procrastinating, but let's be more precise. What exactly are you not doing right now? And what are you doing instead?\n\nBecause procrastination isn't really about time management - it's about avoiding something that feels threatening. What's threatening about this task?";
+      }
+      if (message.includes('feedback') || message.includes('bothered') || message.includes('criticism') || message.includes('comment')) {
+        return "Feedback that 'really bothered' you - that's interesting language. Most feedback bounces off us unless it hits something we're already worried about.\n\nWhat part of that feedback felt true? What did it confirm that you were already afraid might be accurate about yourself?";
+      }
+      if (message.includes('stuck') || message.includes('confused') || message.includes('overwhelmed')) {
+        return "You say you're stuck, but that's not quite accurate, is it? You know what you need to do. You're just not doing it.\n\nWhat's the gap between knowing and doing here? What happens when you sit down to actually work on this thing?";
+      }
+      if (message.includes('scared') || message.includes('afraid') || message.includes('nervous')) {
+        return "Good. You're being honest about the fear. Most people won't even admit that part.\n\nBut let's be specific - what exactly are you afraid will happen? Are you afraid you'll fail, or are you afraid you'll succeed and then have to live up to that success?";
+      }
+      return "I hear you. Before we dive in, help me understand what's really going on here. What triggered this thought today specifically? Did something happen, or has this been building up?";
+    }
+    
+    // Stage 2: Pattern recognition and challenge
+    if (conversationLength <= 3) {
+      if (message.includes('busy') || message.includes('complicated') || message.includes('situation') || message.includes('hectic')) {
+        return "Stop. You just gave me a surface-level explanation. 'Busy' and 'complicated' are what we tell ourselves when we don't want to look at the real reason.\n\nYou have 24 hours in a day just like everyone else. What are you actually choosing to prioritize instead of this thing? And why are those choices feeling safer right now?";
+      }
+      if (message.includes('unfair') || message.includes('understand') || message.includes('lot going on') || message.includes('you dont get it')) {
+        return "I'm not here to be fair. I'm here to call out the patterns you can't see because you're too close to them.\n\nYou say I don't understand your situation - but here's what I do see: You're using the complexity of your life as a shield to avoid dealing with something specific. What is that something?";
+      }
+      if (message.includes('trying') || message.includes('working on it') || message.includes('doing my best')) {
+        return "No, you're not 'trying.' Trying is what we say when we want credit for intention without the commitment to results.\n\nIf you were actually trying, you'd have specific actions you've taken in the last 48 hours. What are they? And don't tell me you 'thought about it' - that's not trying, that's avoiding.";
+      }
+      if (message.includes('time') || message.includes('schedule') || message.includes('when') || message.includes('later')) {
+        return "Time isn't your problem. Priority is. You find time for Netflix, for scrolling social media, for whatever feels easy and safe.\n\nThis isn't about finding time - it's about choosing to feel uncomfortable for a specific outcome. When was the last time you chose discomfort on purpose?";
+      }
+      return "Okay, now I'm getting a clearer picture. But I'm noticing something - this feels familiar, doesn't it? You've been in this exact mental space before. What pattern are you seeing here that you might be repeating?";
+    }
+    
+    // Stage 3: Core wound and breakthrough
+    if (conversationLength <= 5) {
+      if (message.includes('right') || message.includes('true') || message.includes('pattern') || message.includes('see it')) {
+        return "Good. You're starting to see it. Those unfinished projects aren't random - they're a pattern. Each time you start something, you get excited, then you hit the hard part where you're not immediately good at it.\n\nThat feeling of being incompetent? That's where you always run. When did you first learn that struggling means you're not good enough?";
+      }
+      if (message.includes('scared') || message.includes('failing') || message.includes('afraid') || message.includes('failure')) {
+        return "There it is. You're scared of failing. But let me ask you something harder: What if you're actually scared of succeeding?\n\nBecause failing keeps you safe in that familiar place where you can say 'I could have been great if only...' Success means you'd have to live up to your potential. Which one actually terrifies you more?";
+      }
+      if (message.includes('hard') || message.includes('difficult') || message.includes('challenging')) {
+        return "Of course it's hard. Everything worth doing is hard. But you keep acting surprised by difficulty, like you expected to be naturally gifted at everything.\n\nWhat if being bad at something for a while is exactly what you need to experience? What if the point isn't to avoid the struggle but to prove to yourself you can survive it?";
+      }
+      if (message.includes('enough') || message.includes('good enough') || message.includes('not good')) {
+        return "Ah, there's the core wound. 'Not good enough.' That voice has been running your life, hasn't it?\n\nEvery time you start something and it's not immediately perfect, that voice kicks in. But here's what's interesting - you keep giving it power by avoiding the very experiences that would prove it wrong. What would happen if you did the thing badly and survived?";
+      }
+      return "Wait. Stop right there. You just described a pattern where you start things with excitement, hit difficulty, and then find reasons to stop. That's not procrastination - that's self-protection. What are you protecting yourself from?";
+    }
+    
+    // Stage 4: Direct challenge and commitment
+    if (conversationLength <= 7) {
+      if (message.includes('30 minutes') || message.includes('tomorrow') || message.includes('will do') || message.includes('going to')) {
+        return "I've heard this before. You're going to 'try' and 'work on it' and 'make time.' Those are not commitments - those are escapes disguised as promises.\n\nA real commitment is specific: 'I will sit down at 3 PM today and work on X for exactly 45 minutes, even if I feel like garbage the entire time.' What's YOUR specific commitment? When, what, and for how long?";
+      }
+      if (message.includes('you dont understand') || message.includes('its different') || message.includes('not that simple')) {
+        return "You're right. I don't understand your specific situation. But I understand avoidance. And right now, you're avoiding making a clear, specific commitment.\n\nEvery person who does hard things feels exactly like you do right now. The difference is they do it anyway. What would you do if you knew you couldn't fail?";
+      }
+      return "Okay, I hear you saying you'll work on it. But here's the thing - you've said that before, haven't you? About other projects, other commitments.\n\nHere's what we're going to do differently this time: You're going to tell me exactly what you're going to do, when you're going to do it, and how you'll know you've done it. And then you're going to report back. No vague promises. Specific actions. What is it?";
+    }
+    
+    // Stage 5+: No escape, practical demand
+    return "Enough. We're done with the stories and excuses. You're going to pick ONE specific thing - not tomorrow, not 'when I feel ready' - ONE thing you're going to do in the next 2 hours that moves this forward. And you're going to sit with feeling incompetent while you do it. What is that one thing? And don't you dare give me something vague.";
+  };
+
   const MOCK_RESPONSES = [
-    "Interesting thought! Before we dive into solutions, I'd like to understand the context better. What sparked this particular idea for you right now? Was there something you experienced recently, or have you been mulling this over for a while?",
-    
-    "That's helpful context. Now I'm curious about your current situation - where are you with this area of your life right now? What's working, what isn't, and what have you already tried or considered?",
-    
-    "I'm noticing a pattern here that might be worth exploring. You mentioned wanting to start something new, but I'm wondering - what other projects or commitments do you currently have on your plate? Sometimes our brain craves novelty when we're avoiding something difficult in what we're already working on.",
-    
-    "Hold on - let me challenge you on something. You've described this new idea with a lot of enthusiasm, but I'm hearing some familiar patterns. How is this different from the last three projects you started? What makes you confident this won't end up in the same 'started but not finished' pile?",
-    
-    "Fair point. Let's dig deeper into what success actually looks like for you here. If we fast-forward 6 months and this has gone really well, what would be different in your life? Be specific - not just 'I'll feel better' but what tangible changes would you see?",
-    
-    "Now here's the hard question: What are you afraid will happen if you don't pursue this? I suspect there might be something underneath driving the urgency you're feeling about this idea."
+    // These are now unused - keeping for fallback only
+    "I notice you're sharing something important. Let's explore this further - what's really underneath this feeling?"
   ];
 
   let mockResponseIndex = 0;
@@ -432,13 +519,23 @@ function App() {
     setIsLoading(true);
     setError(null);
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+    // Simulate API delay that gets shorter as conversation deepens (urgency builds)
+    const baseDelay = Math.max(800, 2000 - (messages.length * 150));
+    await new Promise(resolve => setTimeout(resolve, baseDelay + Math.random() * 500));
     
     try {
-      // Get a mock response - cycle through different responses
-      const assistantMessage = MOCK_RESPONSES[mockResponseIndex % MOCK_RESPONSES.length];
-      mockResponseIndex++;
+      // Get contextual response based on the actual user message
+      const userMessage = messages[messages.length - 1].content;
+      const conversationLength = Math.floor(messages.length / 2);
+      
+      // Generate contextual response
+      let assistantMessage = generateContextualResponse(userMessage, conversationLength);
+      
+      // If no specific response generated, use fallback
+      if (!assistantMessage || assistantMessage === '') {
+        assistantMessage = MOCK_RESPONSES[mockResponseIndex % MOCK_RESPONSES.length];
+        mockResponseIndex++;
+      }
       
       const newMessages = [...messages, { role: 'assistant', content: assistantMessage }];
       setCurrentMessages(newMessages);
@@ -483,7 +580,7 @@ function App() {
     setCurrentTypingText('');
     setTypingIndex(0);
     
-    // Start the typing effect
+    // Start the typing effect - 50+ WPM (average 5 chars per word = 250+ CPM = ~24ms per char)
     const typeText = () => {
       let index = 0;
       const typingInterval = setInterval(() => {
@@ -500,12 +597,12 @@ function App() {
             setUserInput('');
             setShowTypingDemo(false);
             setCurrentTypingText('');
-          }, 300);
+          }, 200);
         }
-      }, 30 + Math.random() * 40); // Faster, more natural typing speed
+      }, 20 + Math.random() * 10); // 20-30ms per character = 50-60+ WPM
     };
     
-    setTimeout(typeText, 200); // Shorter delay before starting
+    setTimeout(typeText, 100); // Quick start
   };
 
   const cancelTypingDemo = () => {
@@ -1015,15 +1112,52 @@ Let's start with: What's on my mind right now?`;
           <div className="bg-blue-500 bg-opacity-10 border border-blue-500 p-3 mb-6 rounded flex items-center gap-2">
             <MessageSquare className="h-4 w-4 text-blue-400 flex-shrink-0" />
             <p className="text-sm text-blue-400">
-              <strong>Try the demo:</strong> This AI will challenge your thinking patterns with brutal honesty
+              <strong>Watch the tension build:</strong> AI gets more direct and specific with each exchange
+              {currentMessages.length > 0 && (
+                <span className={`ml-2 ${
+                  currentMessages.length <= 2 ? 'text-green-400' : 
+                  currentMessages.length <= 4 ? 'text-yellow-400' : 'text-red-400'
+                }`}>
+                  • {currentMessages.length <= 2 ? 'Gentle probing' : 
+                      currentMessages.length <= 4 ? 'Direct challenge' : 'No escape'}
+                </span>
+              )}
             </p>
           </div>
           
           {error && <div className="bg-red-900 border-2 border-red-600 p-4 mb-6"><p className="font-bold">{error}</p></div>}
           <div className="space-y-6 mb-6">
-            {currentMessages.map((msg, idx) => (
-              <div key={idx} className={`p-6 border-2 ${msg.role === 'user' ? 'border-blue-500 bg-blue-500 bg-opacity-10' : 'border-yellow-500 bg-yellow-500 bg-opacity-10'}`}>
-                <div className="font-black text-sm mb-2 text-gray-400">{msg.role === 'user' ? 'YOU' : 'AI THINKING PARTNER'}</div>
+            {currentMessages.map((msg, idx) => {
+              const isAI = msg.role === 'assistant';
+              const aiMessageIndex = isAI ? Math.floor(idx / 2) : -1;
+              const intensityLevel = isAI ? Math.min(aiMessageIndex + 1, 6) : 0;
+              
+              let borderColor = 'border-blue-500 bg-blue-500 bg-opacity-10';
+              let aiIndicator = '';
+              
+              if (isAI) {
+                if (intensityLevel <= 2) {
+                  borderColor = 'border-green-500 bg-green-500 bg-opacity-10';
+                  aiIndicator = '🤔 ';
+                } else if (intensityLevel <= 4) {
+                  borderColor = 'border-yellow-500 bg-yellow-500 bg-opacity-10';
+                  aiIndicator = '⚡ ';
+                } else {
+                  borderColor = 'border-red-500 bg-red-500 bg-opacity-10';
+                  aiIndicator = '🔥 ';
+                }
+              }
+              
+              return (
+                <div key={idx} className={`p-6 border-2 ${borderColor}`}>
+                  <div className="font-black text-sm mb-2 text-gray-400">
+                    {msg.role === 'user' ? 'YOU' : `${aiIndicator}AI THINKING PARTNER`}
+                    {isAI && intensityLevel > 0 && (
+                      <span className="ml-2 text-xs opacity-75">
+                        Intensity {intensityLevel}/6
+                      </span>
+                    )}
+                  </div>
                 <div className="prose prose-invert max-w-none">
                   {msg.content.split('\n').map((line, i) => {
                     if (line.startsWith('### ')) return <h3 key={i} className="text-xl font-bold mt-4 mb-2">{line.substring(4)}</h3>;
@@ -1056,7 +1190,8 @@ Let's start with: What's on my mind right now?`;
                   })}
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
           
           {showTypingDemo ? (
@@ -1109,14 +1244,14 @@ Let's start with: What's on my mind right now?`;
                   rows="3"
                 />
                 <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-700">
-                  <div className="flex gap-2">
-                    {DEMO_PROMPTS.slice(0, 2).map((prompt, index) => (
+                  <div className="flex gap-2 flex-wrap">
+                    {getFollowUpPrompts(currentMessages.length).map((prompt, index) => (
                       <button
                         key={index}
                         onClick={() => startTypingDemo(prompt)}
                         className="text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full transition-colors"
                       >
-                        {prompt.split(' ').slice(0, 3).join(' ')}...
+                        {prompt.split(' ').slice(0, 4).join(' ')}...
                       </button>
                     ))}
                   </div>

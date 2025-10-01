@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { FileDown, FileUp, Settings, MessageSquare, List, Calendar, Edit3, RotateCcw, Save, X, Key } from 'lucide-react';
-import ApiKeyModal from './ApiKeyModal';
+import { FileDown, FileUp, Settings, MessageSquare, List, Calendar, Edit3, RotateCcw, Save, X, Key, AlertTriangle } from 'lucide-react';
 
 const DEFAULT_PROMPT = `**Your Role: Strategic Thinking Partner & Board of Directors**
 
@@ -96,10 +95,10 @@ function App() {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   
-  // API Key Management
-  const [userApiKey, setUserApiKey] = useState('');
-  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
-  const [rateLimitInfo, setRateLimitInfo] = useState(null);
+  // API Key Management - Removed for demo
+  // const [userApiKey, setUserApiKey] = useState('');
+  // const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  // const [rateLimitInfo, setRateLimitInfo] = useState(null);
 
   const exportData = () => {
     const data = {
@@ -250,68 +249,38 @@ function App() {
     setEditingPrompt(false);
   };
 
+  // Mock API responses for demonstration
+  const MOCK_RESPONSES = [
+    "Interesting thought! Before we dive into solutions, I'd like to understand the context better. What sparked this particular idea for you right now? Was there something you experienced recently, or have you been mulling this over for a while?",
+    
+    "That's helpful context. Now I'm curious about your current situation - where are you with this area of your life right now? What's working, what isn't, and what have you already tried or considered?",
+    
+    "I'm noticing a pattern here that might be worth exploring. You mentioned wanting to start something new, but I'm wondering - what other projects or commitments do you currently have on your plate? Sometimes our brain craves novelty when we're avoiding something difficult in what we're already working on.",
+    
+    "Hold on - let me challenge you on something. You've described this new idea with a lot of enthusiasm, but I'm hearing some familiar patterns. How is this different from the last three projects you started? What makes you confident this won't end up in the same 'started but not finished' pile?",
+    
+    "Fair point. Let's dig deeper into what success actually looks like for you here. If we fast-forward 6 months and this has gone really well, what would be different in your life? Be specific - not just 'I'll feel better' but what tangible changes would you see?",
+    
+    "Now here's the hard question: What are you afraid will happen if you don't pursue this? I suspect there might be something underneath driving the urgency you're feeling about this idea."
+  ];
+
+  let mockResponseIndex = 0;
+
   const sendMessageToClaude = async (messages) => {
     setIsLoading(true);
     setError(null);
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+    
     try {
-      const factsContext = facts.map(f => `${f.key}: ${f.value}`).join('\n');
-      let projectContext = '';
-      if (currentProjectId) {
-        const project = projects.find(p => p.id === currentProjectId);
-        if (project) {
-          projectContext = `\n\nCURRENT PROJECT:\nTitle: ${project.title}\nStatus: ${project.status}\nDoD: ${project.definition_of_done || 'Not defined'}\nProgress: ${project.progress_notes}`;
-        }
-      }
-      const systemPrompt = `${aiPrompt}\n\nUSER FACTS:\n${factsContext}${projectContext}`;
+      // Get a mock response - cycle through different responses
+      const assistantMessage = MOCK_RESPONSES[mockResponseIndex % MOCK_RESPONSES.length];
+      mockResponseIndex++;
       
-      // Get backend URL from environment variable
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
-      
-      const response = await fetch(`${backendUrl}/api/claude`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-3-5-haiku-20241022',
-          max_tokens: 2000,
-          system: systemPrompt,
-          messages: messages,
-          userApiKey: userApiKey // Include user's API key if they have one
-        })
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        
-        // Handle rate limit exceeded
-        if (errorData.rateLimitExceeded) {
-          setRateLimitInfo({ rateLimitExceeded: true, totalLimit: true });
-          setShowApiKeyModal(true);
-          setIsLoading(false);
-          return;
-        }
-        
-        // Handle invalid API key
-        if (errorData.invalidApiKey) {
-          setUserApiKey(''); // Clear the invalid key
-          setError('Invalid API key. Please check your key and try again.');
-          setShowApiKeyModal(true);
-          setIsLoading(false);
-          return;
-        }
-        
-        throw new Error(errorData.error || `API failed: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Store rate limit info if present
-      if (data.rateLimitInfo) {
-        setRateLimitInfo(data.rateLimitInfo);
-      }
-      
-      const assistantMessage = data.content[0].text;
       const newMessages = [...messages, { role: 'assistant', content: assistantMessage }];
       setCurrentMessages(newMessages);
+      
       if (currentProjectId) {
         const existingConv = conversations.find(c => c.project_id === currentProjectId);
         if (existingConv) {
@@ -426,8 +395,27 @@ Let's start with: What's on my mind right now?`;
   // Onboarding View
   if (currentView === 'onboarding') {
     return (
-      <div className="min-h-screen bg-black text-white p-8">
-        <div className="max-w-3xl mx-auto">
+      <div className="min-h-screen bg-black text-white">
+        {/* Demo Banner */}
+        <div className="bg-blue-50 border-b border-blue-200 px-6 py-3">
+          <div className="max-w-4xl mx-auto">
+            <p className="text-blue-800 text-sm">
+              💡 This is a design/UI demonstration. The repo is available on{' '}
+              <a 
+                href="https://github.com/skay93m/ai-thinking-partner" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="font-semibold underline hover:text-blue-600"
+              >
+                GitHub
+              </a>{' '}
+              - clone it and add your Claude API key if you'd like full functionality. Built to demonstrate approach to ADHD-friendly thinking partner tools.
+            </p>
+          </div>
+        </div>
+        
+        <div className="p-8">
+          <div className="max-w-3xl mx-auto">
           {onboardingStep === 0 && (
             <div className="space-y-8">
               <div className="border-4 border-yellow-500 p-8 bg-yellow-500 bg-opacity-10">
@@ -559,13 +547,14 @@ Let's start with: What's on my mind right now?`;
                     </label>
                     <input
                       type="password"
-                      value={userApiKey}
-                      onChange={(e) => setUserApiKey(e.target.value)}
-                      placeholder="sk-ant-api03-..."
-                      className="w-full bg-gray-900 border-2 border-gray-700 p-3 text-lg font-mono focus:border-blue-500 focus:outline-none"
+                      value=""
+                      onChange={() => {}}
+                      placeholder="Demo mode - see GitHub for live functionality"
+                      className="w-full bg-gray-900 border-2 border-gray-700 p-3 text-lg font-mono opacity-50 cursor-not-allowed"
+                      disabled={true}
                     />
                     <p className="text-xs text-gray-400">
-                      Leave empty to use free tier. Your key is stored only in browser memory (secure).
+                      Demo mode: To enable API key functionality, clone the repo and add your key.
                     </p>
                   </div>
                 </div>
@@ -579,55 +568,26 @@ Let's start with: What's on my mind right now?`;
                   ← Back
                 </button>
                 <button 
-                  onClick={async () => {
-                    // If user provided a key, validate it
-                    if (userApiKey.trim()) {
-                      if (!userApiKey.startsWith('sk-ant-')) {
-                        alert('Invalid API key format. Keys should start with "sk-ant-".\n\nYou can skip this step and use the free tier instead.');
-                        return;
-                      }
-                      
-                      // Validate the key
-                      setIsLoading(true);
-                      try {
-                        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
-                        const response = await fetch(`${backendUrl}/api/validate-key`, {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ apiKey: userApiKey.trim() })
-                        });
-                        const data = await response.json();
-                        
-                        if (!data.valid) {
-                          const useAnyway = confirm('API key validation failed. This key may not work.\n\nClick OK to try anyway, or Cancel to use free tier instead.');
-                          if (!useAnyway) {
-                            setUserApiKey('');
-                          }
-                        }
-                      } catch (error) {
-                        console.error('Validation error:', error);
-                        alert('Could not validate API key (server may be offline). You can try anyway or use free tier.');
-                      } finally {
-                        setIsLoading(false);
-                      }
-                    }
-                    setCurrentView('dashboard');
-                  }}
-                  disabled={isLoading}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white font-black py-4 px-8 text-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => setCurrentView('dashboard')}
+                  className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-black py-4 px-8 text-xl"
                 >
-                  {isLoading ? 'Validating...' : userApiKey.trim() ? `Let's Go, ${userName}! 🚀` : `Start with Free Tier`}
+                  Continue to Demo
                 </button>
               </div>
               
               <div className="border-t-2 border-gray-700 pt-4">
-                <p className="text-xs text-gray-500">
-                  💡 <strong>Tip:</strong> You can always add or change your API key later from the dashboard.
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                  <p className="text-sm text-yellow-400 font-semibold">Demo Mode</p>
+                </div>
+                <p className="text-xs text-gray-400">
+                  This is a UI mockup demonstrating the concept. The AI responses are simulated examples showing how the thinking partner would challenge and guide you through your thoughts.
                 </p>
               </div>
             </div>
           )}
         </div>
+      </div>
       </div>
     );
   }
@@ -635,8 +595,27 @@ Let's start with: What's on my mind right now?`;
   // Settings View
   if (currentView === 'settings') {
     return (
-      <div className="min-h-screen bg-black text-white p-8">
-        <div className="fixed bottom-6 right-6 z-50">
+      <div className="min-h-screen bg-black text-white">
+        {/* Demo Banner */}
+        <div className="bg-blue-50 border-b border-blue-200 px-6 py-3">
+          <div className="max-w-4xl mx-auto">
+            <p className="text-blue-800 text-sm">
+              💡 This is a design/UI demonstration. The repo is available on{' '}
+              <a 
+                href="https://github.com/skay93m/ai-thinking-partner" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="font-semibold underline hover:text-blue-600"
+              >
+                GitHub
+              </a>{' '}
+              - clone it and add your Claude API key if you'd like full functionality. Built to demonstrate approach to ADHD-friendly thinking partner tools.
+            </p>
+          </div>
+        </div>
+        
+        <div className="p-8">
+          <div className="fixed bottom-6 right-6 z-50">
           {copySuccess && (
             <div className="absolute bottom-full right-0 mb-2 bg-green-600 text-white px-4 py-2 rounded font-bold whitespace-nowrap">
               ✓ Copied to clipboard!
@@ -790,14 +769,8 @@ Let's start with: What's on my mind right now?`;
           </div>
         </div>
         
-        {/* API Key Modal */}
-        <ApiKeyModal
-          isOpen={showApiKeyModal}
-          onClose={() => setShowApiKeyModal(false)}
-          onSave={(key) => setUserApiKey(key)}
-          currentKey={userApiKey}
-          rateLimitInfo={rateLimitInfo}
-        />
+        {/* API Key Modal - Removed for demo */}
+      </div>
       </div>
     );
   }
@@ -805,8 +778,27 @@ Let's start with: What's on my mind right now?`;
   // Conversation View
   if (currentView === 'conversation') {
     return (
-      <div className="min-h-screen bg-black text-white p-8">
-        <div className="fixed bottom-6 right-6 z-50">
+      <div className="min-h-screen bg-black text-white">
+        {/* Demo Banner */}
+        <div className="bg-blue-50 border-b border-blue-200 px-6 py-3">
+          <div className="max-w-4xl mx-auto">
+            <p className="text-blue-800 text-sm">
+              💡 This is a design/UI demonstration. The repo is available on{' '}
+              <a 
+                href="https://github.com/skay93m/ai-thinking-partner" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="font-semibold underline hover:text-blue-600"
+              >
+                GitHub
+              </a>{' '}
+              - clone it and add your Claude API key if you'd like full functionality. Built to demonstrate approach to ADHD-friendly thinking partner tools.
+            </p>
+          </div>
+        </div>
+        
+        <div className="p-8">
+          <div className="fixed bottom-6 right-6 z-50">
           {copySuccess && (
             <div className="absolute bottom-full right-0 mb-2 bg-green-600 text-white px-4 py-2 rounded font-bold whitespace-nowrap">
               ✓ Copied to clipboard!
@@ -865,21 +857,14 @@ Let's start with: What's on my mind right now?`;
             </div>
           </div>
           
-          {/* API Key Status Banner */}
-          {!userApiKey && rateLimitInfo && rateLimitInfo.usingSharedKey && (
-            <div className="bg-yellow-500 bg-opacity-10 border-2 border-yellow-500 p-3 mb-4 flex justify-between items-center">
-              <div>
-                <p className="font-bold text-sm">Free Tier: {rateLimitInfo.remaining}/{rateLimitInfo.limit} requests remaining</p>
-                <p className="text-xs text-gray-400">Total lifetime limit</p>
-              </div>
-              <button 
-                onClick={() => setShowApiKeyModal(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 text-sm flex items-center gap-1"
-              >
-                <Key size={14} /> Add API Key
-              </button>
+          {/* Demo Notice */}
+          <div className="bg-blue-500 bg-opacity-10 border-2 border-blue-500 p-3 mb-4 flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-blue-400" />
+            <div>
+              <p className="font-bold text-sm text-blue-400">Demo Mode</p>
+              <p className="text-xs text-gray-400">AI responses are simulated examples</p>
             </div>
-          )}
+          </div>
           
           {error && <div className="bg-red-900 border-2 border-red-600 p-4 mb-6"><p className="font-bold">{error}</p></div>}
           <div className="space-y-6 mb-6">
@@ -923,35 +908,54 @@ Let's start with: What's on my mind right now?`;
           <div className="space-y-4">
             <textarea value={userInput} onChange={(e) => setUserInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter' && e.ctrlKey) handleSendMessage(); }}
-              placeholder="Write your thoughts... (Ctrl+Enter to send)"
-              className="w-full bg-gray-900 border-2 border-gray-700 p-4 text-lg h-40 resize-y" disabled={isLoading}/>
-            <button onClick={handleSendMessage} disabled={isLoading || !userInput.trim()}
-              className="w-full bg-white hover:bg-gray-200 text-black font-black py-4 px-8 text-xl disabled:opacity-50">
-              {isLoading ? 'AI is thinking...' : 'Send Message'}
-            </button>
+              placeholder="Demo mode - see GitHub to enable functionality"
+              className="w-full bg-gray-900 border-2 border-gray-700 p-4 text-lg h-40 resize-y opacity-50 cursor-not-allowed" disabled={true}/>
+            <div className="relative">
+              <button 
+                disabled={true}
+                className="w-full bg-gray-400 text-gray-600 font-black py-4 px-8 text-xl cursor-not-allowed"
+                title="Demo mode - see GitHub to enable"
+              >
+                Send Message (Demo Mode)
+              </button>
+            </div>
           </div>
         </div>
         
-        {/* API Key Modal */}
-        <ApiKeyModal
-          isOpen={showApiKeyModal}
-          onClose={() => setShowApiKeyModal(false)}
-          onSave={(key) => setUserApiKey(key)}
-          currentKey={userApiKey}
-          rateLimitInfo={rateLimitInfo}
-        />
+        {/* API Key Modal - Removed for demo */}
+      </div>
       </div>
     );
   }
 
+  // Projects List View
   // Projects List View
   if (currentView === 'projectsList') {
     const activeProjects = projects.filter(p => p.status === 'active');
     const parkedProjects = projects.filter(p => p.status === 'parked');
     const completedProjects = projects.filter(p => p.status === 'completed');
     return (
-      <div className="min-h-screen bg-black text-white p-8">
-        <div className="fixed bottom-6 right-6 z-50">
+      <div className="min-h-screen bg-black text-white">
+        {/* Demo Banner */}
+        <div className="bg-blue-50 border-b border-blue-200 px-6 py-3">
+          <div className="max-w-4xl mx-auto">
+            <p className="text-blue-800 text-sm">
+              💡 This is a design/UI demonstration. The repo is available on{' '}
+              <a 
+                href="https://github.com/skay93m/ai-thinking-partner" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="font-semibold underline hover:text-blue-600"
+              >
+                GitHub
+              </a>{' '}
+              - clone it and add your Claude API key if you'd like full functionality. Built to demonstrate approach to ADHD-friendly thinking partner tools.
+            </p>
+          </div>
+        </div>
+        
+        <div className="p-8">
+          <div className="fixed bottom-6 right-6 z-50">
           {copySuccess && (
             <div className="absolute bottom-full right-0 mb-2 bg-green-600 text-white px-4 py-2 rounded font-bold whitespace-nowrap">
               ✓ Copied to clipboard!
@@ -1054,22 +1058,35 @@ Let's start with: What's on my mind right now?`;
           )}
         </div>
         
-        {/* API Key Modal */}
-        <ApiKeyModal
-          isOpen={showApiKeyModal}
-          onClose={() => setShowApiKeyModal(false)}
-          onSave={(key) => setUserApiKey(key)}
-          currentKey={userApiKey}
-          rateLimitInfo={rateLimitInfo}
-        />
+        {/* API Key Modal - Removed for demo */}
+      </div>
       </div>
     );
   }
 
   // Dashboard View
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <div className="fixed bottom-6 right-6 z-50">
+    <div className="min-h-screen bg-black text-white">
+      {/* Demo Banner */}
+      <div className="bg-blue-50 border-b border-blue-200 px-6 py-3">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-blue-800 text-sm">
+            💡 This is a design/UI demonstration. The repo is available on{' '}
+            <a 
+              href="https://github.com/skay93m/ai-thinking-partner" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="font-semibold underline hover:text-blue-600"
+            >
+              GitHub
+            </a>{' '}
+            - clone it and add your Claude API key if you'd like full functionality. Built to demonstrate approach to ADHD-friendly thinking partner tools.
+          </p>
+        </div>
+      </div>
+      
+      <div className="p-8">
+        <div className="fixed bottom-6 right-6 z-50">
         {copySuccess && (
           <div className="absolute bottom-full right-0 mb-2 bg-green-600 text-white px-4 py-2 rounded font-bold whitespace-nowrap">
             ✓ Copied to clipboard!
@@ -1093,8 +1110,9 @@ Let's start with: What's on my mind right now?`;
           </div>
         )}
         <button 
-          onClick={() => setShowExportMenu(!showExportMenu)}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold p-4 rounded-full shadow-lg flex items-center gap-2"
+          onClick={() => alert('Demo: This would export your data and conversations. Clone the repo to enable data management!')}
+          className="bg-gray-600 hover:bg-gray-500 text-white font-bold p-4 rounded-full shadow-lg flex items-center gap-2 opacity-75"
+          title="Demo mode - see GitHub to enable"
         >
           <FileDown size={24} />
         </button>
@@ -1106,9 +1124,10 @@ Let's start with: What's on my mind right now?`;
             <h1 className="text-4xl font-black">Welcome back, {userName}.</h1>
             <p className="text-gray-400 mt-2">Last check-in: {new Date(lastCheckIn).toLocaleString()}</p>
           </div>
-          <button onClick={() => setCurrentView('settings')}
-            className="bg-gray-800 hover:bg-gray-700 px-6 py-2 font-bold flex items-center gap-2">
-            <Settings size={20} /> Settings
+          <button onClick={() => alert('Demo: This would open settings to customize prompts and export data. Clone the repo to enable!')}
+            className="bg-gray-800 hover:bg-gray-700 px-6 py-2 font-bold flex items-center gap-2 opacity-75"
+            title="Demo mode - see GitHub to enable">
+            <Settings size={20} /> Settings (Demo)
           </button>
         </div>
         {error && <div className="bg-red-900 border-2 border-red-600 p-4 mb-6"><p className="font-bold">{error}</p></div>}
@@ -1146,27 +1165,31 @@ Let's start with: What's on my mind right now?`;
                 )}
               </div>
               <button
-                onClick={() => setShowApiKeyModal(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 flex items-center gap-2"
+                onClick={() => alert('Demo: This would let you add your own API key for unlimited access. Clone the repo to enable!')}
+                className="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 flex items-center gap-2 opacity-75"
+                title="Demo mode - see GitHub to enable"
               >
                 <Key size={18} />
-                {userApiKey ? 'Manage Key' : 'Add API Key'}
+                API Key (Demo)
               </button>
             </div>
           </div>
         </div>
         <div className="space-y-4">
-          <button onClick={startNewThought}
-            className="w-full bg-white hover:bg-gray-200 text-black font-black py-6 px-8 text-2xl flex items-center justify-center gap-3">
-            <MessageSquare size={28} /> Start a New Thought
+          <button onClick={() => alert('Demo: This would start a new AI conversation. Clone the repo and add your API key to enable!')}
+            className="w-full bg-gray-700 hover:bg-gray-600 text-white font-black py-6 px-8 text-2xl flex items-center justify-center gap-3 opacity-75"
+            title="Demo mode - see GitHub to enable">
+            <MessageSquare size={28} /> Start a New Thought (Demo)
           </button>
-          <button onClick={() => setCurrentView('projectsList')}
-            className="w-full bg-gray-800 hover:bg-gray-700 text-white font-black py-6 px-8 text-2xl flex items-center justify-center gap-3">
-            <List size={28} /> Review Existing Thoughts
+          <button onClick={() => alert('Demo: This would show your existing conversations and projects. Clone the repo to enable!')}
+            className="w-full bg-gray-700 hover:bg-gray-600 text-white font-black py-6 px-8 text-2xl flex items-center justify-center gap-3 opacity-75"
+            title="Demo mode - see GitHub to enable">
+            <List size={28} /> Review Existing Thoughts (Demo)
           </button>
-          <button onClick={dailyCheckIn}
-            className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-black py-6 px-8 text-2xl flex items-center justify-center gap-3">
-            <Calendar size={28} /> Daily Check-In
+          <button onClick={() => alert('Demo: This would start an AI-guided daily check-in. Clone the repo and add your API key to enable!')}
+            className="w-full bg-gray-700 hover:bg-gray-600 text-white font-black py-6 px-8 text-2xl flex items-center justify-center gap-3 opacity-75"
+            title="Demo mode - see GitHub to enable">
+            <Calendar size={28} /> Daily Check-In (Demo)
           </button>
         </div>
         <div className="mt-8 border-2 border-red-600 p-4 bg-red-600 bg-opacity-10">
@@ -1176,14 +1199,8 @@ Let's start with: What's on my mind right now?`;
         </div>
       </div>
       
-      {/* API Key Modal */}
-      <ApiKeyModal
-        isOpen={showApiKeyModal}
-        onClose={() => setShowApiKeyModal(false)}
-        onSave={(key) => setUserApiKey(key)}
-        currentKey={userApiKey}
-        rateLimitInfo={rateLimitInfo}
-      />
+      {/* API Key Modal - Removed for demo */}
+    </div>
     </div>
   );
 }

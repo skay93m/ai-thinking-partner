@@ -1,112 +1,133 @@
-# AI Thinking Partner for ADHDer
+# AI Thinking Partner for ADHDer - UI Mockup
 
-[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://aithinkingpartner.syafiqkay.com)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Built with Claude](https://img.shields.io/badge/built%20with-Claude%20AI-orange)](https://claude.ai)
 
-> A productivity tool for ADHD brains that helps break the pattern of starting-and-abandoning projects through AI-powered Socratic questioning.
+> A productivity tool concept for ADHD brains that helps break the pattern of starting-and-abandoning projects through AI-powered Socratic questioning.
 
-**[Try it live](https://aithinkingpartner.syafiqkay.com)** | **[Read the story](#motivation)**
+**[View UI Mockup](#getting-started)** | **[Read the story](#motivation)**
+
+## ⚠️ Project Status: UI Mockup Only
+
+**This project has been scaled back to a design/UI demonstration.** 
+
+While building this, I recognized I was repeating my own pattern: starting a new project without finishing ones already in progress. So I'm sticking with claude.ai chat as my thinking partner and keeping this as a UI mockup to demonstrate the concept.
+
+Sometimes the most valuable outcome is recognizing the pattern before you're too deep in it.
+
+## The Concept
 
 A productivity tool designed for ADHD brains that helps break the pattern of starting-and-abandoning projects through AI-powered Socratic questioning.
 
-## Features
-- **Brutally honest AI thinking partner** using Claude API
+## Features (Mockup Demonstration)
+- **Brutally honest AI thinking partner** (simulated responses)
 - **Project tracking** with Definition of Done
 - **Pattern detection** (credential-chasing, novelty-seeking)
 - **Daily check-ins** that notice when you're spreading thin
 - **Facts database** for context about your patterns
 - **No judgment** for parked projects
-- **Flexible API key options**: Free tier or bring your own key
 
-## API Key Options
+## Getting Started
 
-### Free Tier
-- **10 AI requests per hour** per user
-- No API key required
-- Perfect for trying out the app
-- Rate limits reset every hour
+### Running Locally
 
-### Unlimited Access (Recommended)
-- **Bring your own Anthropic API key**
-- Unlimited requests
-- Cost: ~$0.01-0.03 per conversation
-- Get your key at [console.anthropic.com](https://console.anthropic.com/)
-- Your key is stored only in browser memory (secure)
-- Key never saved to disk or localStorage
+This is a frontend-only mockup. To run locally:
 
-### How It Works
-1. **New users** automatically use the free tier (10 requests/hour)
-2. **Rate limit reached?** A modal appears suggesting you add your own API key
-3. **Add your key** → Unlimited requests, stored securely in memory
-4. **Key validation** → Keys are tested before being accepted
-5. **Session-based** → Key expires when you close the browser tab
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-### For Developers
-The backend supports both shared and user-provided API keys:
-- Shared key has rate limiting per IP address
-- Daily cost tracking prevents runaway costs
-- User keys bypass all rate limits
-- API key validation endpoint ensures keys work before accepting
+### Deploying to Render
 
-## Tech Stack
+This repository is configured for easy deployment to Render as a static site:
+
+1. **Fork or clone this repository** to your GitHub account
+2. **Connect to Render**:
+   - Go to [render.com](https://render.com) and sign up/login
+   - Click "New" → "Static Site"
+   - Connect your GitHub repository
+3. **Deploy automatically**: 
+   - Render will detect the `render.yaml` configuration
+   - Build command: `cd frontend && npm install && npm run build`
+   - Publish directory: `frontend/dist`
+   - The site will deploy automatically
+
+### Manual Static Site Setup
+
+If you prefer manual configuration:
+- **Build Command**: `cd frontend && npm install && npm run build`
+- **Publish Directory**: `frontend/dist`
+- **Node Version**: 18.x or higher
+
+The mockup includes:
+- Sample conversations with simulated AI responses
+- UI for all planned features
+- Example data showing how the tool would work
+- No real API calls or data persistence
+
+## Motivation
+
+ADHD brains often start projects with excitement but abandon them when they get difficult or boring. This tool concept was designed to:
+
+1. **Challenge the impulse** to start something new
+2. **Surface the patterns** behind project-jumping 
+3. **Provide accountability** without judgment
+4. **Help clarify** what "done" actually looks like
+
+The irony wasn't lost on me that while building this tool to prevent project-abandonment, I was essentially doing exactly that - starting a new project instead of finishing existing ones.
+
+## If You Want This Built
+
+If you think there's value in this concept and want to see it deployed to production, let me know. In the meantime, I'm sticking with claude.ai chat as my thinking partner.
+
+The repo demonstrates the UX concept and could serve as a foundation for someone who wants to build it out properly.
+
+## Tech Stack (Mockup)
 - **Frontend**: React 18, Vite, Tailwind CSS (via CDN), Lucide React (icons)
-- **Backend**: Node.js, Express, CORS, Dotenv
-- **API**: Claude API (Sonnet 4)
+- **Backend**: ~~Node.js, Express~~ Removed for mockup
+- **API**: ~~Claude API~~ Simulated responses
 
 ## Project Structure
 ```
 ai-thinking-partner/
-├── frontend/           # React frontend application
+├── frontend/           # React frontend mockup
 │   ├── src/
-│   │   ├── App.jsx    # Main application component
+│   │   ├── App.jsx    # Main application component (mockup)
 │   │   └── main.jsx   # Entry point
 │   ├── index.html
 │   ├── package.json
-│   ├── vite.config.js
-│   ├── .env           # Local development (not committed)
-│   └── .env.example   # Template for environment variables
-├── backend/           # Express API server
-│   ├── server.js      # Main server file with Claude API proxy
-│   ├── package.json
-│   ├── .env           # Local development (not committed)
-│   └── .env.example   # Template for API key
+│   └── vite.config.js
+├── backend/           # [Removed for mockup]
 └── README.md
 ```
 
-## Local Development
+## Running the Mockup
 
 ### Prerequisites
 - Node.js 18+ and npm
 
-### Backend Setup
+### Setup
 ```bash
-# Navigate to backend directory
-cd backend
-
-# Install dependencies
-npm install
-
-# Copy environment template
-cp .env.example .env
-
-# Edit .env and add your Anthropic API key
-# ANTHROPIC_API_KEY=sk-ant-...
-# PORT=3001
-
-# Start backend server
-npm run dev
-```
-
-The backend will run on `http://localhost:3001`
-
-### Frontend Setup
-```bash
-# Navigate to frontend directory (in a new terminal)
+# Navigate to frontend directory
 cd frontend
 
 # Install dependencies
 npm install
+
+# Start development server
+npm run dev
+```
+
+The mockup will run on `http://localhost:5173`
+
+### What You'll See
+- Complete UI for all planned features
+- Sample conversations with simulated AI responses
+- Example projects and facts data
+- All interactions work but don't persist data
+- No real API calls - everything is mocked for demonstration
 
 # Copy environment template
 cp .env.example .env
@@ -120,50 +141,26 @@ npm run dev
 
 The frontend will run on `http://localhost:5173`
 
-### Getting Your Anthropic API Key
-1. Go to [https://console.anthropic.com/](https://console.anthropic.com/)
-2. Sign up or log in
-3. Navigate to API Keys section
-4. Create a new API key
-5. Copy the key and add it to `backend/.env`
+## Why This Approach?
 
-## Deployment to Render.com
+This tool concept was born from personal experience with ADHD patterns:
 
-This project requires deploying both frontend and backend separately.
+1. **Excitement about new projects** often masks avoidance of difficult work
+2. **"This time will be different"** thinking ignores past patterns
+3. **External accountability** helps more than willpower alone
+4. **Socratic questioning** reveals underlying motivations
 
-### Backend Deployment (Web Service)
+The AI thinking partner would be designed to:
+- Challenge the impulse to start something new
+- Surface patterns behind project-jumping 
+- Provide accountability without judgment
+- Help clarify what "done" actually looks like
 
-1. Create a new **Web Service** on Render.com
-2. Connect your GitHub repository
-3. Configure:
-   - **Root Directory**: `backend`
-   - **Build Command**: `npm install`
-   - **Start Command**: `npm start`
-4. Add Environment Variables:
-   - `ANTHROPIC_API_KEY`: Your Claude API key (from console.anthropic.com)
-   - `PORT`: 3001 (or leave blank, Render will assign automatically)
-5. Deploy!
-6. Note your backend URL (e.g., `https://your-app.onrender.com`)
+## License
 
-### Frontend Deployment (Static Site)
+MIT License - see [LICENSE](LICENSE) file for details.
 
-1. Create a new **Static Site** on Render.com
-2. Connect your GitHub repository
-3. Configure:
-   - **Root Directory**: `frontend`
-   - **Build Command**: `npm install && npm run build`
-   - **Publish Directory**: `frontend/dist`
-4. Add Environment Variable:
-   - `VITE_BACKEND_URL`: Your backend URL from step above (e.g., `https://your-backend.onrender.com`)
-5. Deploy!
+## Contributing
 
-### Alternative: Manual Deployment with render.yaml
-
-You can also use separate `render.yaml` files for automated deployment of both services.
-
-### Important Notes
-- The backend must be deployed first to get its URL
-- Update `frontend/.env.production` with the backend URL before frontend deployment
-- Backend will be on a free tier that spins down after inactivity (may have cold start delays)
-- Make sure CORS origins in `backend/server.js` include your frontend URL
+This is currently a UI mockup, but if there's interest in building this out properly, contributions would be welcome. The foundation is here for someone who wants to implement the full concept.
 

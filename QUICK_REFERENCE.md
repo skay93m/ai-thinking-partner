@@ -1,42 +1,130 @@
-# ✅ Configuration Complete - Quick Reference
+# Quick Reference - AI Thinking Partner Mockup# Quick Reference - AI Thinking Partner Mockup# ✅ Configuration Complete - Quick Reference
 
-## What Changed?
 
-### 1. 🔑 API Key Set
-```
-Free Tier Key: [Stored in backend/.env]
-Location: backend/.env
-```
 
-### 2. 📊 Limit Changed
-```
+## What This Is
+
+A UI mockup demonstrating an AI thinking partner tool concept for people with ADHD. The tool is designed to help break the pattern of starting-and-abandoning projects through challenging Socratic questioning.
+
+## What This Is## What Changed?
+
+## Running the Mockup
+
+A UI mockup demonstrating an AI thinking partner tool concept for people with ADHD. The tool is designed to help break the pattern of starting-and-abandoning projects through challenging Socratic questioning.
+
+### Local Development
+
+```bash### 1. 🔑 API Key Set
+
+cd frontend
+
+npm install## Running the Mockup```
+
+npm run dev
+
+``````bashFree Tier Key: [Stored in backend/.env]
+
+Visit `http://localhost:5173`
+
+cd frontendLocation: backend/.env
+
+### Deploy to Render
+
+1. Fork this repositorynpm install```
+
+2. Connect to Render.com as a Static Site
+
+3. Render auto-detects configuration from `render.yaml`npm run dev
+
+4. Deploy automatically!
+
+```### 2. 📊 Limit Changed
+
+**Build settings** (if configuring manually):
+
+- Build Command: `cd frontend && npm install && npm run build`Visit `http://localhost:5173````
+
+- Publish Directory: `frontend/dist`
+
 Before: 10 requests/hour (resets every hour)
-After:  10 requests TOTAL (lifetime per IP)
-```
 
-### 3. 🚀 Model Changed
-```
-Before: Claude Sonnet 4 (claude-sonnet-4-20250514)
+## Key Features (Mockup)
+
+- **Onboarding Flow**: Gather user patterns and facts## Key Features (Mockup)After:  10 requests TOTAL (lifetime per IP)
+
+- **Project Tracking**: Definition of Done, progress notes, status tracking
+
+- **AI Conversations**: Simulated responses that challenge and guide thinking- **Onboarding Flow**: Gather user patterns and facts```
+
+- **Facts Database**: Personal patterns and context
+
+- **Daily Check-ins**: Pattern recognition and accountability- **Project Tracking**: Definition of Done, progress notes, status tracking
+
+
+
+## Demo Flow- **AI Conversations**: Simulated responses that challenge and guide thinking### 3. 🚀 Model Changed
+
+1. Start onboarding (enter any name)
+
+2. Skip API key setup (demo mode)- **Facts Database**: Personal patterns and context```
+
+3. Explore dashboard with sample projects
+
+4. Try "Start New Thought" for simulated conversation- **Daily Check-ins**: Pattern recognition and accountabilityBefore: Claude Sonnet 4 (claude-sonnet-4-20250514)
+
+5. View projects list and facts management
+
 After:  Claude 3.5 Haiku (claude-3-5-haiku-20241022)
 
-Benefits:
-- 3-5x faster responses
-- ~93% cost reduction ($0.001 vs $0.015)
-- Still high quality
-```
+## Why This Approach
 
----
+Built to recognize and address ADHD patterns:## Demo Flow
 
-## Files Modified
+- Novelty-seeking over finishing projects
 
-✅ `backend/server.js` - Rate limit logic + model
-✅ `backend/.env` - API key configured  
+- Credential-chasing when triggered1. Start onboarding (enter any name)Benefits:
+
+- Need for external accountability
+
+- Difficulty defining "done"2. Skip API key setup (demo mode)- 3-5x faster responses
+
+
+
+## Project Status3. Explore dashboard with sample projects- ~93% cost reduction ($0.001 vs $0.015)
+
+**Scaled back to mockup only.** While building this, I recognized I was doing exactly what it was designed to prevent - starting a new project instead of finishing existing ones. Sometimes the most valuable outcome is recognizing the pattern before you're too deep in it.
+
+4. Try "Start New Thought" for simulated conversation- Still high quality
+
+## For Implementation
+
+The UI mockup provides a foundation for someone who wants to build this properly with real AI integration. All the UX patterns and flows are demonstrated.5. View projects list and facts management```
+
+
+
+## Why This Approach---
+
+Built to recognize and address ADHD patterns:
+
+- Novelty-seeking over finishing projects## Files Modified
+
+- Credential-chasing when triggered
+
+- Need for external accountability✅ `backend/server.js` - Rate limit logic + model
+
+- Difficulty defining "done"✅ `backend/.env` - API key configured  
+
 ✅ `backend/.env.example` - Updated comment
-✅ `frontend/src/App.jsx` - UI text + model
-✅ `frontend/src/ApiKeyModal.jsx` - Modal text
 
----
+## Project Status✅ `frontend/src/App.jsx` - UI text + model
 
+**Scaled back to mockup only.** While building this, I recognized I was doing exactly what it was designed to prevent - starting a new project instead of finishing existing ones. Sometimes the most valuable outcome is recognizing the pattern before you're too deep in it.✅ `frontend/src/ApiKeyModal.jsx` - Modal text
+
+
+
+## For Implementation---
+
+The UI mockup provides a foundation for someone who wants to build this properly with real AI integration. All the UX patterns and flows are demonstrated.
 ## User Experience
 
 ### Free Tier Users

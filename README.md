@@ -1,5 +1,13 @@
 # AI Thinking Partner for ADHDer
 
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://aithinkingpartner.syafiqkay.com)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Built with Claude](https://img.shields.io/badge/built%20with-Claude%20AI-orange)](https://claude.ai)
+
+> A productivity tool for ADHD brains that helps break the pattern of starting-and-abandoning projects through AI-powered Socratic questioning.
+
+**[Try it live](https://aithinkingpartner.syafiqkay.com)** | **[Read the story](#motivation)**
+
 A productivity tool designed for ADHD brains that helps break the pattern of starting-and-abandoning projects through AI-powered Socratic questioning.
 
 ## Features

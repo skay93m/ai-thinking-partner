@@ -17,6 +17,37 @@ A productivity tool designed for ADHD brains that helps break the pattern of sta
 - **Daily check-ins** that notice when you're spreading thin
 - **Facts database** for context about your patterns
 - **No judgment** for parked projects
+- **Flexible API key options**: Free tier or bring your own key
+
+## API Key Options
+
+### Free Tier
+- **10 AI requests per hour** per user
+- No API key required
+- Perfect for trying out the app
+- Rate limits reset every hour
+
+### Unlimited Access (Recommended)
+- **Bring your own Anthropic API key**
+- Unlimited requests
+- Cost: ~$0.01-0.03 per conversation
+- Get your key at [console.anthropic.com](https://console.anthropic.com/)
+- Your key is stored only in browser memory (secure)
+- Key never saved to disk or localStorage
+
+### How It Works
+1. **New users** automatically use the free tier (10 requests/hour)
+2. **Rate limit reached?** A modal appears suggesting you add your own API key
+3. **Add your key** → Unlimited requests, stored securely in memory
+4. **Key validation** → Keys are tested before being accepted
+5. **Session-based** → Key expires when you close the browser tab
+
+### For Developers
+The backend supports both shared and user-provided API keys:
+- Shared key has rate limiting per IP address
+- Daily cost tracking prevents runaway costs
+- User keys bypass all rate limits
+- API key validation endpoint ensures keys work before accepting
 
 ## Tech Stack
 - **Frontend**: React 18, Vite, Tailwind CSS (via CDN), Lucide React (icons)

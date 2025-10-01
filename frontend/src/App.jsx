@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FileDown, FileUp, Settings, MessageSquare, List, Calendar, Edit3, RotateCcw, Save, X } from 'lucide-react';
+import { FileDown, FileUp, Settings, MessageSquare, List, Calendar, Edit3, RotateCcw, Save, X, Key } from 'lucide-react';
+import ApiKeyModal from './ApiKeyModal';
 
 const DEFAULT_PROMPT = `**Your Role: Strategic Thinking Partner & Board of Directors**
 
@@ -94,6 +95,11 @@ function App() {
   const [showDocs, setShowDocs] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  
+  // API Key Management
+  const [userApiKey, setUserApiKey] = useState('');
+  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [rateLimitInfo, setRateLimitInfo] = useState(null);
 
   const exportData = () => {
     const data = {
@@ -268,14 +274,41 @@ function App() {
           model: 'claude-sonnet-4-20250514',
           max_tokens: 2000,
           system: systemPrompt,
-          messages: messages
+          messages: messages,
+          userApiKey: userApiKey // Include user's API key if they have one
         })
       });
+      
       if (!response.ok) {
         const errorData = await response.json();
+        
+        // Handle rate limit exceeded
+        if (errorData.rateLimitExceeded) {
+          setRateLimitInfo({ rateLimitExceeded: true, resetIn: errorData.resetIn });
+          setShowApiKeyModal(true);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Handle invalid API key
+        if (errorData.invalidApiKey) {
+          setUserApiKey(''); // Clear the invalid key
+          setError('Invalid API key. Please check your key and try again.');
+          setShowApiKeyModal(true);
+          setIsLoading(false);
+          return;
+        }
+        
         throw new Error(errorData.error || `API failed: ${response.status}`);
       }
+      
       const data = await response.json();
+      
+      // Store rate limit info if present
+      if (data.rateLimitInfo) {
+        setRateLimitInfo(data.rateLimitInfo);
+      }
+      
       const assistantMessage = data.content[0].text;
       const newMessages = [...messages, { role: 'assistant', content: assistantMessage }];
       setCurrentMessages(newMessages);
@@ -638,6 +671,15 @@ Let's start with: What's on my mind right now?`;
             )}
           </div>
         </div>
+        
+        {/* API Key Modal */}
+        <ApiKeyModal
+          isOpen={showApiKeyModal}
+          onClose={() => setShowApiKeyModal(false)}
+          onSave={(key) => setUserApiKey(key)}
+          currentKey={userApiKey}
+          rateLimitInfo={rateLimitInfo}
+        />
       </div>
     );
   }
@@ -678,7 +720,7 @@ Let's start with: What's on my mind right now?`;
         </div>
 
         <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center mb-4">
             <h1 className="text-3xl font-black">
               {currentProjectId ? projects.find(p => p.id === currentProjectId)?.title : 'New Thought'}
             </h1>
@@ -704,6 +746,23 @@ Let's start with: What's on my mind right now?`;
               </button>
             </div>
           </div>
+          
+          {/* API Key Status Banner */}
+          {!userApiKey && rateLimitInfo && rateLimitInfo.usingSharedKey && (
+            <div className="bg-yellow-500 bg-opacity-10 border-2 border-yellow-500 p-3 mb-4 flex justify-between items-center">
+              <div>
+                <p className="font-bold text-sm">Free Tier: {rateLimitInfo.remaining}/{rateLimitInfo.limit} requests remaining</p>
+                <p className="text-xs text-gray-400">Resets in {rateLimitInfo.resetIn} minutes</p>
+              </div>
+              <button 
+                onClick={() => setShowApiKeyModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 text-sm flex items-center gap-1"
+              >
+                <Key size={14} /> Add API Key
+              </button>
+            </div>
+          )}
+          
           {error && <div className="bg-red-900 border-2 border-red-600 p-4 mb-6"><p className="font-bold">{error}</p></div>}
           <div className="space-y-6 mb-6">
             {currentMessages.map((msg, idx) => (
@@ -754,6 +813,15 @@ Let's start with: What's on my mind right now?`;
             </button>
           </div>
         </div>
+        
+        {/* API Key Modal */}
+        <ApiKeyModal
+          isOpen={showApiKeyModal}
+          onClose={() => setShowApiKeyModal(false)}
+          onSave={(key) => setUserApiKey(key)}
+          currentKey={userApiKey}
+          rateLimitInfo={rateLimitInfo}
+        />
       </div>
     );
   }
@@ -867,6 +935,15 @@ Let's start with: What's on my mind right now?`;
             </div>
           )}
         </div>
+        
+        {/* API Key Modal */}
+        <ApiKeyModal
+          isOpen={showApiKeyModal}
+          onClose={() => setShowApiKeyModal(false)}
+          onSave={(key) => setUserApiKey(key)}
+          currentKey={userApiKey}
+          rateLimitInfo={rateLimitInfo}
+        />
       </div>
     );
   }
@@ -926,6 +1003,39 @@ Let's start with: What's on my mind right now?`;
               <div><span className="text-blue-500 font-black">{projects.filter(p => p.status === 'completed').length}</span><span className="text-gray-400"> Completed</span></div>
             </div>
           </div>
+          
+          {/* API Key Status */}
+          <div className="border-2 border-blue-500 p-6">
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-2xl font-black mb-2 flex items-center gap-2">
+                  <Key size={24} /> API STATUS
+                </h2>
+                {userApiKey ? (
+                  <div>
+                    <p className="text-green-500 font-bold text-lg">✓ Using your API key (unlimited)</p>
+                    <p className="text-sm text-gray-400 mt-1">Your key is secure in memory</p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-yellow-500 font-bold text-lg">Using Free Tier</p>
+                    {rateLimitInfo && rateLimitInfo.usingSharedKey && (
+                      <p className="text-sm text-gray-400 mt-1">
+                        {rateLimitInfo.remaining}/{rateLimitInfo.limit} requests remaining (resets in {rateLimitInfo.resetIn} min)
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => setShowApiKeyModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 flex items-center gap-2"
+              >
+                <Key size={18} />
+                {userApiKey ? 'Manage Key' : 'Add API Key'}
+              </button>
+            </div>
+          </div>
         </div>
         <div className="space-y-4">
           <button onClick={startNewThought}
@@ -947,6 +1057,15 @@ Let's start with: What's on my mind right now?`;
           </p>
         </div>
       </div>
+      
+      {/* API Key Modal */}
+      <ApiKeyModal
+        isOpen={showApiKeyModal}
+        onClose={() => setShowApiKeyModal(false)}
+        onSave={(key) => setUserApiKey(key)}
+        currentKey={userApiKey}
+        rateLimitInfo={rateLimitInfo}
+      />
     </div>
   );
 }

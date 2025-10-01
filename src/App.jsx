@@ -936,11 +936,11 @@ Let's start with: What's on my mind right now?`;
           </div>
           
           {/* Demo Notice */}
-          <div className="bg-blue-500 bg-opacity-10 border-2 border-blue-500 p-3 mb-4 flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-blue-400" />
+          <div className="bg-green-500 bg-opacity-10 border-2 border-green-500 p-3 mb-4 flex items-center gap-2">
+            <MessageSquare className="h-5 w-5 text-green-400" />
             <div>
-              <p className="font-bold text-sm text-blue-400">Demo Mode</p>
-              <p className="text-xs text-gray-400">AI responses are simulated examples</p>
+              <p className="font-bold text-sm text-green-400">Fully Interactive Demo</p>
+              <p className="text-xs text-gray-400">Try the AI thinking partner - responses are realistic examples</p>
             </div>
           </div>
           
@@ -986,15 +986,19 @@ Let's start with: What's on my mind right now?`;
           <div className="space-y-4">
             <textarea value={userInput} onChange={(e) => setUserInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter' && e.ctrlKey) handleSendMessage(); }}
-              placeholder="Demo mode - see GitHub to enable functionality"
-              className="w-full bg-gray-900 border-2 border-gray-700 p-4 text-lg h-40 resize-y opacity-50 cursor-not-allowed" disabled={true}/>
+              placeholder="Type your thoughts here... (Ctrl+Enter to send)"
+              className="w-full bg-gray-900 border-2 border-gray-700 p-4 text-lg h-40 resize-y"/>
             <div className="relative">
               <button 
-                disabled={true}
-                className="w-full bg-gray-400 text-gray-600 font-black py-4 px-8 text-xl cursor-not-allowed"
-                title="Demo mode - see GitHub to enable"
+                onClick={handleSendMessage}
+                disabled={!userInput.trim() || isLoading}
+                className={`w-full font-black py-4 px-8 text-xl ${
+                  !userInput.trim() || isLoading 
+                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                    : 'bg-green-600 hover:bg-green-700 text-white'
+                }`}
               >
-                Send Message (Demo Mode)
+                {isLoading ? 'AI is thinking...' : 'Send Message'}
               </button>
             </div>
           </div>

@@ -1,6 +1,26 @@
 import React, { useState } from 'react';
 import { FileDown, FileUp, Settings, MessageSquare, List, Calendar, Edit3, RotateCcw, Save, X, Key, AlertTriangle } from 'lucide-react';
 
+// Reusable Demo Banner Component
+const DemoBanner = () => (
+  <div className="bg-blue-50 border-b border-blue-200 px-6 py-3">
+    <div className="max-w-4xl mx-auto">
+      <p className="text-blue-800 text-sm">
+        💡 This is a design/UI demonstration. The repo is available on{' '}
+        <a 
+          href="https://github.com/skay93m/ai-thinking-partner" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="font-semibold underline hover:text-blue-600"
+        >
+          GitHub
+        </a>{' '}
+        - clone it and add your Claude API key if you'd like full functionality. Built to demonstrate approach to ADHD-friendly thinking partner tools.
+      </p>
+    </div>
+  </div>
+);
+
 const DEFAULT_PROMPT = `**Your Role: Strategic Thinking Partner & Board of Directors**
 
 You are my thinking partner who helps me refine and develop my ideas through deep questioning and collaborative exploration. Your primary job is NOT to provide answers, but to help me think better.
@@ -396,23 +416,7 @@ Let's start with: What's on my mind right now?`;
   if (currentView === 'onboarding') {
     return (
       <div className="min-h-screen bg-black text-white">
-        {/* Demo Banner */}
-        <div className="bg-blue-50 border-b border-blue-200 px-6 py-3">
-          <div className="max-w-4xl mx-auto">
-            <p className="text-blue-800 text-sm">
-              💡 This is a design/UI demonstration. The repo is available on{' '}
-              <a 
-                href="https://github.com/skay93m/ai-thinking-partner" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="font-semibold underline hover:text-blue-600"
-              >
-                GitHub
-              </a>{' '}
-              - clone it and add your Claude API key if you'd like full functionality. Built to demonstrate approach to ADHD-friendly thinking partner tools.
-            </p>
-          </div>
-        </div>
+        <DemoBanner />
         
         <div className="p-8">
           <div className="max-w-3xl mx-auto">
@@ -596,23 +600,7 @@ Let's start with: What's on my mind right now?`;
   if (currentView === 'settings') {
     return (
       <div className="min-h-screen bg-black text-white">
-        {/* Demo Banner */}
-        <div className="bg-blue-50 border-b border-blue-200 px-6 py-3">
-          <div className="max-w-4xl mx-auto">
-            <p className="text-blue-800 text-sm">
-              💡 This is a design/UI demonstration. The repo is available on{' '}
-              <a 
-                href="https://github.com/skay93m/ai-thinking-partner" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="font-semibold underline hover:text-blue-600"
-              >
-                GitHub
-              </a>{' '}
-              - clone it and add your Claude API key if you'd like full functionality. Built to demonstrate approach to ADHD-friendly thinking partner tools.
-            </p>
-          </div>
-        </div>
+        <DemoBanner />
         
         <div className="p-8">
           <div className="fixed bottom-6 right-6 z-50">
@@ -779,23 +767,7 @@ Let's start with: What's on my mind right now?`;
   if (currentView === 'conversation') {
     return (
       <div className="min-h-screen bg-black text-white">
-        {/* Demo Banner */}
-        <div className="bg-blue-50 border-b border-blue-200 px-6 py-3">
-          <div className="max-w-4xl mx-auto">
-            <p className="text-blue-800 text-sm">
-              💡 This is a design/UI demonstration. The repo is available on{' '}
-              <a 
-                href="https://github.com/skay93m/ai-thinking-partner" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="font-semibold underline hover:text-blue-600"
-              >
-                GitHub
-              </a>{' '}
-              - clone it and add your Claude API key if you'd like full functionality. Built to demonstrate approach to ADHD-friendly thinking partner tools.
-            </p>
-          </div>
-        </div>
+        <DemoBanner />
         
         <div className="p-8">
           <div className="fixed bottom-6 right-6 z-50">
@@ -936,23 +908,7 @@ Let's start with: What's on my mind right now?`;
     const completedProjects = projects.filter(p => p.status === 'completed');
     return (
       <div className="min-h-screen bg-black text-white">
-        {/* Demo Banner */}
-        <div className="bg-blue-50 border-b border-blue-200 px-6 py-3">
-          <div className="max-w-4xl mx-auto">
-            <p className="text-blue-800 text-sm">
-              💡 This is a design/UI demonstration. The repo is available on{' '}
-              <a 
-                href="https://github.com/skay93m/ai-thinking-partner" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="font-semibold underline hover:text-blue-600"
-              >
-                GitHub
-              </a>{' '}
-              - clone it and add your Claude API key if you'd like full functionality. Built to demonstrate approach to ADHD-friendly thinking partner tools.
-            </p>
-          </div>
-        </div>
+        <DemoBanner />
         
         <div className="p-8">
           <div className="fixed bottom-6 right-6 z-50">
@@ -1067,23 +1023,7 @@ Let's start with: What's on my mind right now?`;
   // Dashboard View
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Demo Banner */}
-      <div className="bg-blue-50 border-b border-blue-200 px-6 py-3">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-blue-800 text-sm">
-            💡 This is a design/UI demonstration. The repo is available on{' '}
-            <a 
-              href="https://github.com/skay93m/ai-thinking-partner" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="font-semibold underline hover:text-blue-600"
-            >
-              GitHub
-            </a>{' '}
-            - clone it and add your Claude API key if you'd like full functionality. Built to demonstrate approach to ADHD-friendly thinking partner tools.
-          </p>
-        </div>
-      </div>
+      <DemoBanner />
       
       <div className="p-8">
         <div className="fixed bottom-6 right-6 z-50">

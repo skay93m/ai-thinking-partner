@@ -7,10 +7,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Rate limiting for shared key
+// Rate limiting for shared key - TOTAL LIFETIME CALLS
 const rateLimits = new Map();
-const SHARED_KEY_LIMIT = 10; // requests per hour per IP
-const SHARED_KEY_RESET = 3600000; // 1 hour in ms
+const SHARED_KEY_LIMIT = 10; // TOTAL requests per IP (lifetime)
 
 // Cost tracking for shared key
 let dailyCost = 0;
@@ -32,28 +31,21 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'AI Thinking Partner API is running' });
 });
 
-// Rate limiting function
+// Rate limiting function - TOTAL CALLS (no reset)
 function checkRateLimit(ip) {
-  const now = Date.now();
   const userLimit = rateLimits.get(ip);
   
   if (!userLimit) {
-    rateLimits.set(ip, { count: 1, resetTime: now + SHARED_KEY_RESET });
-    return { allowed: true, remaining: SHARED_KEY_LIMIT - 1 };
-  }
-  
-  if (now > userLimit.resetTime) {
-    rateLimits.set(ip, { count: 1, resetTime: now + SHARED_KEY_RESET });
-    return { allowed: true, remaining: SHARED_KEY_LIMIT - 1 };
+    rateLimits.set(ip, { count: 1 });
+    return { allowed: true, remaining: SHARED_KEY_LIMIT - 1, total: false };
   }
   
   if (userLimit.count >= SHARED_KEY_LIMIT) {
-    const resetIn = Math.ceil((userLimit.resetTime - now) / 60000); // minutes
-    return { allowed: false, remaining: 0, resetIn };
+    return { allowed: false, remaining: 0, total: true };
   }
   
   userLimit.count++;
-  return { allowed: true, remaining: SHARED_KEY_LIMIT - userLimit.count };
+  return { allowed: true, remaining: SHARED_KEY_LIMIT - userLimit.count, total: false };
 }
 
 // Claude API proxy endpoint
@@ -76,10 +68,10 @@ app.post('/api/claude', async (req, res) => {
       
       if (!rateCheck.allowed) {
         return res.status(429).json({ 
-          error: 'Rate limit exceeded',
-          message: `You've used all free requests. Rate limit resets in ${rateCheck.resetIn} minutes. Add your own API key for unlimited access.`,
+          error: 'Free tier limit reached',
+          message: `You've used all 10 free requests. Add your own API key for unlimited access.`,
           rateLimitExceeded: true,
-          resetIn: rateCheck.resetIn
+          totalLimit: true
         });
       }
       
@@ -114,7 +106,7 @@ app.post('/api/claude', async (req, res) => {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: model || 'claude-sonnet-4-20250514',
+        model: model || 'claude-3-5-haiku-20241022',
         max_tokens: max_tokens || 2000,
         system,
         messages
@@ -153,7 +145,7 @@ app.post('/api/claude', async (req, res) => {
         usingSharedKey: true,
         remaining: SHARED_KEY_LIMIT - (currentLimit?.count || 0),
         limit: SHARED_KEY_LIMIT,
-        resetIn: Math.ceil((currentLimit.resetTime - Date.now()) / 60000)
+        totalLimit: true // No time-based reset
       };
     }
     
@@ -186,7 +178,7 @@ app.post('/api/validate-key', async (req, res) => {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-3-5-haiku-20241022',
         max_tokens: 10,
         messages: [{ role: 'user', content: 'Hi' }]
       })

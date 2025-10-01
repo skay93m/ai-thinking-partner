@@ -271,7 +271,7 @@ function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-3-5-haiku-20241022',
           max_tokens: 2000,
           system: systemPrompt,
           messages: messages,
@@ -284,7 +284,7 @@ function App() {
         
         // Handle rate limit exceeded
         if (errorData.rateLimitExceeded) {
-          setRateLimitInfo({ rateLimitExceeded: true, resetIn: errorData.resetIn });
+          setRateLimitInfo({ rateLimitExceeded: true, totalLimit: true });
           setShowApiKeyModal(true);
           setIsLoading(false);
           return;
@@ -500,12 +500,130 @@ Let's start with: What's on my mind right now?`;
                       alert('Please enter your name');
                       return;
                     }
-                    setCurrentView('dashboard');
+                    setOnboardingStep(4);
                   }}
                   className="w-full bg-green-600 hover:bg-green-700 text-white font-black py-4 px-8 text-xl"
                 >
-                  {userName.trim() ? `Let's Go, ${userName}` : "Start"}
+                  {userName.trim() ? 'Continue' : "Next"}
                 </button>
+              </div>
+            </div>
+          )}
+          {onboardingStep === 4 && (
+            <div className="space-y-8">
+              <div className="border-2 border-blue-500 p-8">
+                <h2 className="text-3xl font-black mb-6 text-blue-500 flex items-center gap-2">
+                  <Key size={32} /> API KEY SETUP
+                </h2>
+                <p className="text-lg mb-6">
+                  Choose how you want to use the AI thinking partner:
+                </p>
+                
+                {/* Free Tier Option */}
+                <div className="bg-gray-800 border-2 border-gray-600 p-6 mb-4">
+                  <h3 className="text-2xl font-black mb-3 text-yellow-500">Option 1: Free Tier (Quick Start)</h3>
+                  <ul className="space-y-2 text-lg mb-4">
+                    <li>✓ <strong>10 AI requests total</strong></li>
+                    <li>✓ No API key required</li>
+                    <li>✓ Perfect for trying out</li>
+                    <li>✓ Start using immediately</li>
+                  </ul>
+                  <p className="text-gray-400 text-sm">Total lifetime limit - no reset</p>
+                </div>
+
+                {/* Own Key Option */}
+                <div className="bg-gray-800 border-2 border-green-600 p-6 mb-6">
+                  <h3 className="text-2xl font-black mb-3 text-green-500">Option 2: Your API Key (Recommended)</h3>
+                  <ul className="space-y-2 text-lg mb-4">
+                    <li>✓ <strong>Unlimited requests</strong></li>
+                    <li>✓ Cost: ~$0.01-0.03 per conversation</li>
+                    <li>✓ Full control over your usage</li>
+                    <li>✓ Secure (stored in memory only)</li>
+                  </ul>
+                  
+                  <div className="bg-black p-4 rounded mb-4">
+                    <p className="text-sm font-bold text-blue-400 mb-2">🔗 How to get your API key:</p>
+                    <ol className="text-sm space-y-1 list-decimal list-inside text-gray-300">
+                      <li>Visit <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">console.anthropic.com</a></li>
+                      <li>Sign up or log in to your account</li>
+                      <li>Navigate to "API Keys" section</li>
+                      <li>Click "Create Key" or "New API Key"</li>
+                      <li>Copy the key (starts with "sk-ant-")</li>
+                      <li>Paste it below</li>
+                    </ol>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="block text-sm font-bold">
+                      Enter Your Anthropic API Key (Optional)
+                    </label>
+                    <input
+                      type="password"
+                      value={userApiKey}
+                      onChange={(e) => setUserApiKey(e.target.value)}
+                      placeholder="sk-ant-api03-..."
+                      className="w-full bg-gray-900 border-2 border-gray-700 p-3 text-lg font-mono focus:border-blue-500 focus:outline-none"
+                    />
+                    <p className="text-xs text-gray-400">
+                      Leave empty to use free tier. Your key is stored only in browser memory (secure).
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setOnboardingStep(3)}
+                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-4 px-8 text-xl"
+                >
+                  ← Back
+                </button>
+                <button 
+                  onClick={async () => {
+                    // If user provided a key, validate it
+                    if (userApiKey.trim()) {
+                      if (!userApiKey.startsWith('sk-ant-')) {
+                        alert('Invalid API key format. Keys should start with "sk-ant-".\n\nYou can skip this step and use the free tier instead.');
+                        return;
+                      }
+                      
+                      // Validate the key
+                      setIsLoading(true);
+                      try {
+                        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+                        const response = await fetch(`${backendUrl}/api/validate-key`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ apiKey: userApiKey.trim() })
+                        });
+                        const data = await response.json();
+                        
+                        if (!data.valid) {
+                          const useAnyway = confirm('API key validation failed. This key may not work.\n\nClick OK to try anyway, or Cancel to use free tier instead.');
+                          if (!useAnyway) {
+                            setUserApiKey('');
+                          }
+                        }
+                      } catch (error) {
+                        console.error('Validation error:', error);
+                        alert('Could not validate API key (server may be offline). You can try anyway or use free tier.');
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }
+                    setCurrentView('dashboard');
+                  }}
+                  disabled={isLoading}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white font-black py-4 px-8 text-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? 'Validating...' : userApiKey.trim() ? `Let's Go, ${userName}! 🚀` : `Start with Free Tier`}
+                </button>
+              </div>
+              
+              <div className="border-t-2 border-gray-700 pt-4">
+                <p className="text-xs text-gray-500">
+                  💡 <strong>Tip:</strong> You can always add or change your API key later from the dashboard.
+                </p>
               </div>
             </div>
           )}
@@ -752,7 +870,7 @@ Let's start with: What's on my mind right now?`;
             <div className="bg-yellow-500 bg-opacity-10 border-2 border-yellow-500 p-3 mb-4 flex justify-between items-center">
               <div>
                 <p className="font-bold text-sm">Free Tier: {rateLimitInfo.remaining}/{rateLimitInfo.limit} requests remaining</p>
-                <p className="text-xs text-gray-400">Resets in {rateLimitInfo.resetIn} minutes</p>
+                <p className="text-xs text-gray-400">Total lifetime limit</p>
               </div>
               <button 
                 onClick={() => setShowApiKeyModal(true)}
@@ -1021,7 +1139,7 @@ Let's start with: What's on my mind right now?`;
                     <p className="text-yellow-500 font-bold text-lg">Using Free Tier</p>
                     {rateLimitInfo && rateLimitInfo.usingSharedKey && (
                       <p className="text-sm text-gray-400 mt-1">
-                        {rateLimitInfo.remaining}/{rateLimitInfo.limit} requests remaining (resets in {rateLimitInfo.resetIn} min)
+                        {rateLimitInfo.remaining}/{rateLimitInfo.limit} requests remaining (total lifetime limit)
                       </p>
                     )}
                   </div>

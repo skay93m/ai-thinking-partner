@@ -84,16 +84,16 @@ function ApiKeyModal({ isOpen, onClose, onSave, currentKey, rateLimitInfo }) {
               {rateLimitInfo.remaining} / {rateLimitInfo.limit} requests remaining
             </p>
             <p className="text-sm text-gray-400 mt-1">
-              Resets in {rateLimitInfo.resetIn} minutes
+              Total lifetime limit
             </p>
           </div>
         )}
 
         {rateLimitInfo && rateLimitInfo.rateLimitExceeded && (
           <div className="bg-red-500 bg-opacity-10 border-2 border-red-500 p-4 mb-6">
-            <p className="font-bold text-red-500 mb-2">Rate Limit Reached</p>
+            <p className="font-bold text-red-500 mb-2">Free Tier Limit Reached</p>
             <p className="text-gray-300">
-              You've used all your free requests. Add your own API key to continue, or wait {rateLimitInfo.resetIn} minutes.
+              You've used all 10 free requests. Add your own API key to continue with unlimited access.
             </p>
           </div>
         )}
@@ -102,7 +102,7 @@ function ApiKeyModal({ isOpen, onClose, onSave, currentKey, rateLimitInfo }) {
         <div className="bg-gray-800 p-4 mb-6">
           <h3 className="font-bold text-xl mb-2">Free Tier</h3>
           <ul className="space-y-1 text-gray-300">
-            <li>✓ 10 AI requests per hour</li>
+            <li>✓ 10 AI requests total</li>
             <li>✓ No API key required</li>
             <li>✓ Perfect for trying out the app</li>
           </ul>

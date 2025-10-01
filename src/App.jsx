@@ -219,13 +219,9 @@ const DEMO_CONVERSATIONS = [
 
 // Demo prompts for guided typing simulation
 const DEMO_PROMPTS = [
-  "I've been thinking about starting a new project but I'm worried I'll abandon it like the others...",
-  "I keep procrastinating on this important task and I don't understand why.",
-  "I got some feedback today that really bothered me and I can't stop thinking about it.",
-  "I want to make a major life change but I'm scared of making the wrong decision.",
-  "I've been comparing myself to others a lot lately and it's making me feel terrible.",
-  "I'm excited about this new opportunity but I keep finding reasons to delay starting.",
-  "I finished something important but instead of celebrating, I'm already worried about the next thing."
+  "I keep starting projects but never finishing them...",
+  "I'm procrastinating on something important and don't know why.",
+  "I got some feedback that really bothered me and I can't stop thinking about it."
 ];
 
 function App() {
@@ -504,12 +500,12 @@ function App() {
             setUserInput('');
             setShowTypingDemo(false);
             setCurrentTypingText('');
-          }, 500);
+          }, 300);
         }
-      }, 50 + Math.random() * 100); // Variable typing speed for realism
+      }, 30 + Math.random() * 40); // Faster, more natural typing speed
     };
     
-    setTimeout(typeText, 500); // Small delay before starting
+    setTimeout(typeText, 200); // Shorter delay before starting
   };
 
   const cancelTypingDemo = () => {
@@ -1016,12 +1012,11 @@ Let's start with: What's on my mind right now?`;
           </div>
           
           {/* Demo Notice */}
-          <div className="bg-purple-500 bg-opacity-10 border-2 border-purple-500 p-3 mb-4 flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-purple-400" />
-            <div>
-              <p className="font-bold text-sm text-purple-400">Interactive AI Demo</p>
-              <p className="text-xs text-gray-400">Click suggested prompts or type your own - get realistic AI responses</p>
-            </div>
+          <div className="bg-blue-500 bg-opacity-10 border border-blue-500 p-3 mb-6 rounded flex items-center gap-2">
+            <MessageSquare className="h-4 w-4 text-blue-400 flex-shrink-0" />
+            <p className="text-sm text-blue-400">
+              <strong>Try the demo:</strong> This AI will challenge your thinking patterns with brutal honesty
+            </p>
           </div>
           
           {error && <div className="bg-red-900 border-2 border-red-600 p-4 mb-6"><p className="font-bold">{error}</p></div>}
@@ -1066,7 +1061,7 @@ Let's start with: What's on my mind right now?`;
           
           {showTypingDemo ? (
             <div className="space-y-4">
-              <div className="bg-gray-900 border-2 border-blue-500 p-4 text-lg h-40 relative">
+              <div className="bg-gray-900 border-2 border-blue-500 p-4 text-lg min-h-[100px] relative">
                 <div className="absolute top-2 right-2">
                   <button 
                     onClick={cancelTypingDemo}
@@ -1075,56 +1070,68 @@ Let's start with: What's on my mind right now?`;
                     <X size={20} />
                   </button>
                 </div>
-                <div className="text-gray-300">
+                <div className="text-gray-300 pt-2">
                   {currentTypingText}
                   <span className="animate-pulse text-blue-400">|</span>
                 </div>
               </div>
               <div className="text-center text-gray-400 text-sm">
-                <span className="animate-pulse">⌨️ Simulating typing...</span>
+                <span className="animate-pulse">⌨️ Typing...</span>
               </div>
             </div>
-          ) : (
+          ) : currentMessages.length === 0 ? (
             <div className="space-y-4">
-              <div className="bg-gray-900 border-2 border-gray-700 p-4 rounded">
-                <h3 className="text-lg font-bold mb-3 text-blue-400">Try one of these prompts:</h3>
-                <div className="grid grid-cols-1 gap-2">
+              <div className="bg-gray-900 border-2 border-gray-700 p-6 rounded">
+                <h3 className="text-xl font-bold mb-4 text-center text-blue-400">What's on your mind?</h3>
+                <p className="text-center text-gray-400 mb-4 text-sm">Click to try:</p>
+                <div className="space-y-3">
                   {DEMO_PROMPTS.map((prompt, index) => (
                     <button
                       key={index}
                       onClick={() => startTypingDemo(prompt)}
-                      className="text-left bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-blue-500 p-3 rounded text-sm transition-colors"
+                      className="w-full text-left bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-blue-500 p-4 rounded text-white transition-all hover:scale-[1.02]"
                     >
-                      "{prompt}"
+                      💭 {prompt}
                     </button>
                   ))}
                 </div>
               </div>
-              
-              <div className="text-center text-gray-500 text-sm">
-                <p>Click any prompt above to see the AI thinking partner in action</p>
-              </div>
-              
-              <div className="bg-gray-800 border border-gray-600 p-3 rounded">
-                <p className="text-sm text-gray-400 mb-2">Or type your own:</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="bg-gray-900 border border-gray-600 p-4 rounded">
                 <textarea 
                   value={userInput} 
                   onChange={(e) => setUserInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter' && e.ctrlKey) handleSendMessage(); }}
-                  placeholder="Share what's on your mind... (Ctrl+Enter to send)"
-                  className="w-full bg-gray-900 border border-gray-600 p-3 text-sm h-20 resize-none"
+                  placeholder="Continue the conversation... (Ctrl+Enter to send)"
+                  className="w-full bg-transparent border-none p-0 text-white text-lg resize-none focus:outline-none"
+                  rows="3"
                 />
-                <button 
-                  onClick={handleSendMessage}
-                  disabled={!userInput.trim() || isLoading}
-                  className={`w-full mt-2 font-bold py-2 px-4 text-sm ${
-                    !userInput.trim() || isLoading 
-                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
-                      : 'bg-green-600 hover:bg-green-700 text-white'
-                  }`}
-                >
-                  {isLoading ? 'AI is thinking...' : 'Send Your Thought'}
-                </button>
+                <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-700">
+                  <div className="flex gap-2">
+                    {DEMO_PROMPTS.slice(0, 2).map((prompt, index) => (
+                      <button
+                        key={index}
+                        onClick={() => startTypingDemo(prompt)}
+                        className="text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full transition-colors"
+                      >
+                        {prompt.split(' ').slice(0, 3).join(' ')}...
+                      </button>
+                    ))}
+                  </div>
+                  <button 
+                    onClick={handleSendMessage}
+                    disabled={!userInput.trim() || isLoading}
+                    className={`font-bold py-2 px-6 rounded ${
+                      !userInput.trim() || isLoading 
+                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    {isLoading ? 'Thinking...' : 'Send'}
+                  </button>
+                </div>
               </div>
             </div>
           )}

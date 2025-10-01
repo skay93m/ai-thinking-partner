@@ -170,6 +170,22 @@ const DEMO_CONVERSATIONS = [
       {
         role: "assistant",
         content: "Now we're getting somewhere. I see three different triggers here:\n\n1. **Technical difficulty** (React Native navigation)\n2. **Cognitive overload** (TypeScript complexity) \n3. **Comparison wound** (younger designer)\n\nHere's the brutal truth: You're not actually quitting because of ADHD. You're quitting because these projects are triggering a core wound around not being 'good enough.' \n\nThe ADHD brain seeking novelty is just the convenient excuse. The real pattern is: when something challenges your identity as competent, you flee to something new where you can feel smart again.\n\nSo before we build another 'solution,' what if this AI thinking partner idea is just another way to avoid dealing with the fact that you stop when things get real?"
+      },
+      {
+        role: "user",
+        content: "Ouch. That hits hard because... you're probably right. I do feel smart when I'm learning something new, and then when it gets difficult I start doubting myself. But isn't this different? I mean, I'm trying to solve the actual problem."
+      },
+      {
+        role: "assistant",
+        content: "I hear you saying 'isn't this different?' - that's exactly what you told yourself about the React Native project, the TypeScript learning, and the design course. Each time felt like 'solving the actual problem.'\n\nThe pattern isn't about the projects themselves. It's about what happens when your competence gets challenged. You're incredibly good at the beginning phases - research, planning, initial excitement. But when you hit the 'messy middle' where you're not immediately good at something, that 17-year-old wounded part of you panics.\n\nSo here's my challenge: What if instead of building a tool to 'solve' your pattern, you committed to finishing ONE of your abandoned projects first? Prove to yourself you can push through the discomfort of not being immediately competent.\n\nWhich one scares you the most to go back to?"
+      },
+      {
+        role: "user", 
+        content: "The React Native one. I spent two weeks on that navigation issue and felt so stupid. Every tutorial seemed to assume knowledge I didn't have."
+      },
+      {
+        role: "assistant",
+        content: "Perfect. You just identified your growth edge. That 'feeling stupid' is exactly the sensation you've been running from your whole life.\n\nHere's what's really happening: Your ADHD brain is wired to seek novelty and avoid sustained effort on difficult things. But underneath that, there's a 17-year-old who learned that 'not getting it immediately' means 'I'm not good enough.'\n\nReact Native navigation isn't the real problem. The real problem is you've never learned to sit with feeling incompetent long enough to become competent.\n\nSo here's my proposal: Before you build one more 'solution,' go back to that React Native project. Spend one hour on it. Not to solve it, but to practice feeling stupid without running away. Can you do that?"
       }
     ],
     created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
@@ -186,11 +202,30 @@ const DEMO_CONVERSATIONS = [
       {
         role: "assistant",
         content: "Congratulations on the client! Now let's talk about this portfolio perfectionism.\n\nYou already have a paying client, which means your work is good enough to generate revenue. Yet you're polishing a portfolio instead of serving that client or finding the next one.\n\nWhat's really happening here? Are you afraid that if you launch an 'imperfect' portfolio, you'll be exposed as a fraud? Or is perfectionism a way to delay the scary work of actually running a business?\n\nHere's a reality check: Your portfolio's job is to get you clients, not win design awards. You literally already have proof it works.\n\nWhat would happen if you launched it today, exactly as it is?"
+      },
+      {
+        role: "user",
+        content: "I guess... people might think I'm not as good as I seem? The client hired me based on some rough work I showed them, but the portfolio feels like it needs to be more polished to represent me 'officially.'"
+      },
+      {
+        role: "assistant", 
+        content: "There it is. 'Not as good as I seem' - that's the fear driving this whole perfectionism spiral.\n\nLet me get brutal for a second: You're not actually perfecting the portfolio. You're procrastinating on business development because that's where the real rejection risk lives. \n\nEvery hour you spend tweaking fonts and adjusting margins is an hour you're not:\n- Reaching out to potential clients\n- Delivering excellence to your current client  \n- Building systems to handle more work\n\nYour ADHD brain loves the 'perfecting' work because it feels productive but doesn't risk real failure. But here's the thing: your rough work already got you paid. That's more validation than any perfect portfolio will ever give you.\n\nSo what are you really avoiding by hiding behind portfolio perfectionism?"
       }
     ],
     created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
   }
+];
+
+// Demo prompts for guided typing simulation
+const DEMO_PROMPTS = [
+  "I've been thinking about starting a new project but I'm worried I'll abandon it like the others...",
+  "I keep procrastinating on this important task and I don't understand why.",
+  "I got some feedback today that really bothered me and I can't stop thinking about it.",
+  "I want to make a major life change but I'm scared of making the wrong decision.",
+  "I've been comparing myself to others a lot lately and it's making me feel terrible.",
+  "I'm excited about this new opportunity but I keep finding reasons to delay starting.",
+  "I finished something important but instead of celebrating, I'm already worried about the next thing."
 ];
 
 function App() {
@@ -223,6 +258,12 @@ function App() {
     remaining: 10, 
     limit: 10 
   });
+
+  // Typing simulation state
+  const [showTypingDemo, setShowTypingDemo] = useState(false);
+  const [currentTypingText, setCurrentTypingText] = useState('');
+  const [typingIndex, setTypingIndex] = useState(0);
+  const [selectedPrompt, setSelectedPrompt] = useState('');
   // const [rateLimitInfo, setRateLimitInfo] = useState(null);
 
   const exportData = () => {
@@ -437,6 +478,45 @@ function App() {
     const newMessages = [...currentMessages, { role: 'user', content: userInput }];
     sendMessageToClaude(newMessages);
     setUserInput('');
+  };
+
+  // Typing simulation functions
+  const startTypingDemo = (promptText) => {
+    setSelectedPrompt(promptText);
+    setShowTypingDemo(true);
+    setCurrentTypingText('');
+    setTypingIndex(0);
+    
+    // Start the typing effect
+    const typeText = () => {
+      let index = 0;
+      const typingInterval = setInterval(() => {
+        if (index < promptText.length) {
+          setCurrentTypingText(promptText.slice(0, index + 1));
+          setTypingIndex(index + 1);
+          index++;
+        } else {
+          clearInterval(typingInterval);
+          // Auto-send after typing is complete
+          setTimeout(() => {
+            const newMessages = [...currentMessages, { role: 'user', content: promptText }];
+            sendMessageToClaude(newMessages);
+            setUserInput('');
+            setShowTypingDemo(false);
+            setCurrentTypingText('');
+          }, 500);
+        }
+      }, 50 + Math.random() * 100); // Variable typing speed for realism
+    };
+    
+    setTimeout(typeText, 500); // Small delay before starting
+  };
+
+  const cancelTypingDemo = () => {
+    setShowTypingDemo(false);
+    setCurrentTypingText('');
+    setSelectedPrompt('');
+    setTypingIndex(0);
   };
 
   const startNewThought = () => {
@@ -936,11 +1016,11 @@ Let's start with: What's on my mind right now?`;
           </div>
           
           {/* Demo Notice */}
-          <div className="bg-green-500 bg-opacity-10 border-2 border-green-500 p-3 mb-4 flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-green-400" />
+          <div className="bg-purple-500 bg-opacity-10 border-2 border-purple-500 p-3 mb-4 flex items-center gap-2">
+            <MessageSquare className="h-5 w-5 text-purple-400" />
             <div>
-              <p className="font-bold text-sm text-green-400">Fully Interactive Demo</p>
-              <p className="text-xs text-gray-400">Try the AI thinking partner - responses are realistic examples</p>
+              <p className="font-bold text-sm text-purple-400">Interactive AI Demo</p>
+              <p className="text-xs text-gray-400">Click suggested prompts or type your own - get realistic AI responses</p>
             </div>
           </div>
           
@@ -983,25 +1063,71 @@ Let's start with: What's on my mind right now?`;
               </div>
             ))}
           </div>
-          <div className="space-y-4">
-            <textarea value={userInput} onChange={(e) => setUserInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && e.ctrlKey) handleSendMessage(); }}
-              placeholder="Type your thoughts here... (Ctrl+Enter to send)"
-              className="w-full bg-gray-900 border-2 border-gray-700 p-4 text-lg h-40 resize-y"/>
-            <div className="relative">
-              <button 
-                onClick={handleSendMessage}
-                disabled={!userInput.trim() || isLoading}
-                className={`w-full font-black py-4 px-8 text-xl ${
-                  !userInput.trim() || isLoading 
-                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
-                    : 'bg-green-600 hover:bg-green-700 text-white'
-                }`}
-              >
-                {isLoading ? 'AI is thinking...' : 'Send Message'}
-              </button>
+          
+          {showTypingDemo ? (
+            <div className="space-y-4">
+              <div className="bg-gray-900 border-2 border-blue-500 p-4 text-lg h-40 relative">
+                <div className="absolute top-2 right-2">
+                  <button 
+                    onClick={cancelTypingDemo}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                <div className="text-gray-300">
+                  {currentTypingText}
+                  <span className="animate-pulse text-blue-400">|</span>
+                </div>
+              </div>
+              <div className="text-center text-gray-400 text-sm">
+                <span className="animate-pulse">⌨️ Simulating typing...</span>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="bg-gray-900 border-2 border-gray-700 p-4 rounded">
+                <h3 className="text-lg font-bold mb-3 text-blue-400">Try one of these prompts:</h3>
+                <div className="grid grid-cols-1 gap-2">
+                  {DEMO_PROMPTS.map((prompt, index) => (
+                    <button
+                      key={index}
+                      onClick={() => startTypingDemo(prompt)}
+                      className="text-left bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-blue-500 p-3 rounded text-sm transition-colors"
+                    >
+                      "{prompt}"
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="text-center text-gray-500 text-sm">
+                <p>Click any prompt above to see the AI thinking partner in action</p>
+              </div>
+              
+              <div className="bg-gray-800 border border-gray-600 p-3 rounded">
+                <p className="text-sm text-gray-400 mb-2">Or type your own:</p>
+                <textarea 
+                  value={userInput} 
+                  onChange={(e) => setUserInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' && e.ctrlKey) handleSendMessage(); }}
+                  placeholder="Share what's on your mind... (Ctrl+Enter to send)"
+                  className="w-full bg-gray-900 border border-gray-600 p-3 text-sm h-20 resize-none"
+                />
+                <button 
+                  onClick={handleSendMessage}
+                  disabled={!userInput.trim() || isLoading}
+                  className={`w-full mt-2 font-bold py-2 px-4 text-sm ${
+                    !userInput.trim() || isLoading 
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                      : 'bg-green-600 hover:bg-green-700 text-white'
+                  }`}
+                >
+                  {isLoading ? 'AI is thinking...' : 'Send Your Thought'}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
         
         {/* API Key Modal - Removed for demo */}

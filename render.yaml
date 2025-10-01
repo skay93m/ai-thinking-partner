@@ -2,7 +2,6 @@ services:
   - type: web
     name: ai-thinking-partner-mockup
     env: static
-    rootDir: frontend
     buildCommand: npm ci && npm run build
     staticPublishPath: ./dist
     routes:

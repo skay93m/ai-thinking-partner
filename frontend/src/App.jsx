@@ -257,7 +257,11 @@ function App() {
         }
       }
       const systemPrompt = `${aiPrompt}\n\nUSER FACTS:\n${factsContext}${projectContext}`;
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      
+      // Get backend URL from environment variable
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      
+      const response = await fetch(`${backendUrl}/api/claude`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -267,7 +271,10 @@ function App() {
           messages: messages
         })
       });
-      if (!response.ok) throw new Error(`API failed: ${response.status}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `API failed: ${response.status}`);
+      }
       const data = await response.json();
       const assistantMessage = data.content[0].text;
       const newMessages = [...messages, { role: 'assistant', content: assistantMessage }];
@@ -308,6 +315,20 @@ function App() {
     setCurrentProjectId(null);
     setCurrentMessages([]);
     setCurrentView('conversation');
+    
+    // Send initial structured prompt to guide the conversation (Bug #2 fix)
+    const initialPrompt = `I want to start exploring a new thought or project. Help me think through this systematically by:
+
+1. Understanding what sparked this thought
+2. Clarifying my current situation and context
+3. Identifying what I've already considered
+4. Exploring what success would look like
+5. Discussing any concerns or uncertainties I have
+
+Let's start with: What's on my mind right now?`;
+    
+    const initialMessages = [{ role: 'user', content: initialPrompt }];
+    sendMessageToClaude(initialMessages);
   };
 
   const openExistingThought = (projectId) => {

@@ -2,8 +2,9 @@ services:
   - type: web
     name: ai-thinking-partner-mockup
     env: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: frontend/dist
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
     routes:
       - type: rewrite
         source: /*

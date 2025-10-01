@@ -20,7 +20,7 @@ A productivity tool designed for ADHD brains that helps break the pattern of sta
 ## Local Development
 
 ### Prerequisites
-- Node.js 16+ and npm
+- Node.js 18+ and npm
 
 ### Setup
 ```bash
@@ -32,3 +32,29 @@ npm run dev
 
 # Build for production
 npm run build
+```
+
+## Deployment to Render.com
+
+This project is configured for automatic deployment to Render.com as a static site.
+
+### Option 1: Automatic (Recommended)
+The included `render.yaml` file configures everything automatically:
+1. Push your code to GitHub
+2. Connect your repository to Render.com
+3. Render will detect the configuration and deploy
+
+### Option 2: Manual Dashboard Setup
+If you prefer manual configuration:
+1. Create a new **Static Site** on Render.com
+2. Connect your GitHub repository
+3. Configure:
+   - **Build Command**: `npm install && npm run build`
+   - **Publish Directory**: `dist`
+4. Deploy!
+
+### Environment Variables
+If you're using the Claude API:
+- Add your `VITE_CLAUDE_API_KEY` in Render's environment variables section
+- The app will work without it but won't be able to make AI requests
+
